@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Type Systems: Exam Prep (PL3 Lecture 2)</title>
+<style>
+:root{--bg:#f4f7fa;--card:#fff;--ink:#14213d;--mute:#52607a;--line:#d6dee9;--acc:#0b6e8a;--accbg:#dff1f6;--hi:#ffe9a6;--ok:#157347;--okbg:#dff3e6;--bad:#b3261e;--badbg:#fbe3e1;--code:#eaf0f6;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0d1624;--card:#15223a;--ink:#e6edf7;--mute:#9db0cc;--line:#2a3a58;--acc:#6cc7e0;--accbg:#12384a;--hi:#5b4a10;--ok:#6fdc9c;--okbg:#10382a;--bad:#ff8f87;--badbg:#431a18;--code:#0f1b30}}
+:root[data-theme="dark"]{--bg:#0d1624;--card:#15223a;--ink:#e6edf7;--mute:#9db0cc;--line:#2a3a58;--acc:#6cc7e0;--accbg:#12384a;--hi:#5b4a10;--ok:#6fdc9c;--okbg:#10382a;--bad:#ff8f87;--badbg:#431a18;--code:#0f1b30}
+*{box-sizing:border-box}html{scroll-padding-top:70px}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.65 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+h1,h2,h3{font-family:Georgia,"Times New Roman",serif;line-height:1.25;margin:0 0 .5em}
+header{max-width:860px;margin:0 auto;padding:28px 18px 8px;display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+header h1{font-size:1.7rem}header p{margin:0;color:var(--mute);font-size:.95rem}
+#theme{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:20px;padding:6px 14px;cursor:pointer;font:inherit;font-size:.9rem}
+nav{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+nav div{max-width:860px;margin:0 auto;padding:8px 18px;display:flex;gap:6px;overflow-x:auto}
+nav button{border:1px solid var(--line);background:var(--card);color:var(--ink);padding:7px 14px;border-radius:8px;cursor:pointer;font:inherit;font-size:.92rem;white-space:nowrap}
+nav button[aria-selected="true"]{background:var(--acc);color:var(--bg);border-color:var(--acc);font-weight:600}
+button:focus-visible,summary:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+main{max-width:860px;margin:0 auto;padding:18px}
+section{display:none}section.on{display:block;animation:in .25s ease}
+@keyframes in{from{opacity:0}to{opacity:1}}
+@media (prefers-reduced-motion:reduce){section.on{animation:none}}
+details{background:var(--card);border:1px solid var(--line);border-radius:10px;margin:0 0 12px}
+summary{cursor:pointer;padding:13px 16px;font-family:Georgia,serif;font-weight:700;font-size:1.08rem;list-style:none;display:flex;justify-content:space-between}
+summary::after{content:"+";color:var(--acc);font-size:1.3rem;line-height:1}
+details[open]>summary::after{content:"\2212"}
+.body{padding:2px 16px 14px;border-top:1px solid var(--line)}
+.body h3{font-size:1rem;margin-top:1em;color:var(--acc)}
+mark{background:var(--hi);color:inherit;padding:0 3px;border-radius:3px}
+.def{border-left:4px solid var(--acc);background:var(--accbg);padding:8px 12px;border-radius:0 8px 8px 0;margin:10px 0}
+.trap{border-left:4px solid var(--bad);background:var(--badbg);padding:8px 12px;border-radius:0 8px 8px 0;margin:10px 0}
+.ana{border-left:4px solid var(--ok);background:var(--okbg);padding:8px 12px;border-radius:0 8px 8px 0;margin:10px 0}
+pre,code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.86rem}
+pre{background:var(--code);padding:10px 12px;border-radius:8px;overflow-x:auto;margin:8px 0}
+code{background:var(--code);padding:1px 5px;border-radius:4px}pre code{padding:0;background:none}
+.tw{overflow-x:auto}table{border-collapse:collapse;width:100%;min-width:480px;font-size:.92rem}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}th{background:var(--accbg)}
+.bar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:14px}
+.bar button,.opt,.rev{font:inherit;cursor:pointer}
+.bar button,.rev{border:1px solid var(--line);background:var(--card);color:var(--ink);padding:6px 12px;border-radius:8px}
+.score{margin-left:auto;font-weight:700;color:var(--acc)}
+.q{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin-bottom:12px}
+.q h3{font-size:1rem;font-family:system-ui,sans-serif;margin-bottom:.6em}
+.lvl{font-size:.78rem;color:var(--mute);margin-left:6px;font-weight:400}
+.opt{display:block;width:100%;text-align:left;border:1px solid var(--line);background:var(--bg);color:var(--ink);padding:8px 12px;border-radius:8px;margin:6px 0}
+.opt:hover:not(:disabled){border-color:var(--acc)}
+.opt.ok{background:var(--okbg);border-color:var(--ok)}.opt.no{background:var(--badbg);border-color:var(--bad)}
+.exp{display:none;margin-top:8px;padding:8px 12px;background:var(--accbg);border-radius:8px;font-size:.93rem}.exp.on{display:block}
+.ans{display:none;margin-top:8px}.ans.on{display:block}
+ul{padding-left:1.2em;margin:.4em 0}li{margin:.2em 0}
+.chk label{display:block;padding:3px 0}
+@media (max-width:520px){header h1{font-size:1.35rem}}
+</style>
+</head>
+<body>
+<header>
+  <div><h1>Advanced Type Systems</h1><p>PL3 Lecture 2 · exam prep: explain, summarise, practise, revise</p></div>
+  <button id="theme" aria-label="Toggle dark or light mode">Dark mode</button>
+</header>
+<nav><div role="tablist" id="tabs"></div></nav>
+<main>
+
+<section id="explain">
+<p>Open each topic. Highlighted text is exam-critical. Green boxes are analogies, red boxes are traps.</p>
+
+<details open><summary>1. What is a type system?</summary><div class="body">
+<div class="def"><b>Definition:</b> a <mark>set of rules that assigns a type</mark> to constructs in a language: variables, expressions and functions.</div>
+<p>Think of it as a rulebook that decides what may be combined with what. The slide shows the flow: <b>Code → Type System Rules → Valid / Invalid</b>.</p>
+<h3>Three jobs (all examinable)</h3>
+<ul><li><mark>Assigns types</mark>: maps constructs to types so operations depend on those types.</li>
+<li><mark>Prevents errors</mark>: catches invalid operations early; operations run only on compatible types.</li>
+<li><mark>Enables optimizations</mark>: the compiler can assume memory layout and operations, so it emits more efficient machine code (Code → Optimized Code).</li></ul>
+<div class="ana"><b>Analogy:</b> plugs and sockets. A type system refuses to let a UK plug into a US socket before anything catches fire.</div>
+</div></details>
+
+<details><summary>2. Static vs dynamic typing</summary><div class="body">
+<div class="tw"><table><tr><th></th><th>Static</th><th>Dynamic</th></tr>
+<tr><td>When checked</td><td><mark>Compile time</mark></td><td><mark>Runtime</mark></td></tr>
+<tr><td>Errors found</td><td>Early (compiler catches them)</td><td>Late (during execution)</td></tr>
+<tr><td>Performance</td><td>Faster execution</td><td>Potential overhead</td></tr>
+<tr><td>Safety</td><td>Strong guarantees</td><td>Flexibility over safety</td></tr>
+<tr><td>Examples</td><td>Rust, Java, C++</td><td>Python, JavaScript, Ruby</td></tr></table></div>
+<pre><code>int x = "hello";   // Java: ERROR at compile time
+x = "hello"        # Python: fine
+x = 5              # Python: still valid (x changes type)</code></pre>
+<div class="ana"><b>Analogy:</b> static = a spell-checker that blocks printing; dynamic = proofreading while reading aloud to an audience.</div>
+<div class="trap"><b>Trap:</b> static/dynamic is about <i>when</i> checking happens. Strong/weak (next topic) is about <i>coercion</i>. They are independent axes.</div>
+</div></details>
+
+<details><summary>3. Strong vs weak typing</summary><div class="body">
+<div class="tw"><table><tr><th></th><th>Strong</th><th>Weak</th></tr>
+<tr><td>Implicit coercion</td><td><mark>Not allowed</mark></td><td><mark>Allowed</mark></td></tr>
+<tr><td>Conversions</td><td>Explicit, required</td><td>Automatic</td></tr>
+<tr><td>Effect</td><td>Prevents accidental type errors</td><td>Flexible, but can cause bugs</td></tr>
+<tr><td>Examples</td><td>Rust, Java, Python</td><td>JavaScript, PHP, C</td></tr></table></div>
+<h3>The JavaScript example (memorise both lines)</h3>
+<pre><code>"5" - 2   // 3     string "5" becomes number 5 (implicit)
+"5" + 2   // "52"  number 2 becomes string "2" (implicit)</code></pre>
+<p>Same operand types, opposite coercion direction: <code>-</code> only makes sense for numbers, <code>+</code> also concatenates strings, so it picks strings.</p>
+<div class="ana"><b>Analogy:</b> a strict translator refuses to guess and asks you to clarify; a lenient one silently guesses a meaning, sometimes wrongly.</div>
+<div class="trap"><b>Trap:</b> Python is <mark>dynamic AND strong</mark>. Never say "dynamic means weak".</div>
+</div></details>
+
+<details><summary>4. Polymorphism: parametric, ad-hoc, subtype</summary><div class="body">
+<h3>4a. Parametric</h3>
+<div class="def">Functions or data structures written <mark>generically</mark>, operating <mark>uniformly</mark> on values regardless of their specific type. <b>Type variables act as placeholders;</b> the compiler instantiates the generic code with concrete types.</div>
+<pre><code>class Box&lt;T&gt; { T value; Box(T v){ value = v; } T getValue(){ return value; } }
+Box&lt;Integer&gt; intBox = new Box&lt;Integer&gt;(123);   // T = Integer
+Box&lt;String&gt; stringBox = new Box&lt;String&gt;("hello"); // T = String
+intBox.getValue();    // 123
+stringBox.getValue(); // hello</code></pre>
+<p><b>Benefits:</b> code reuse across types, compile-time type safety, performance through inlining.</p>
+<div class="ana">A labelled storage jar: the label (T) says what it holds, the jar design is the same.</div>
+<h3>4b. Ad-hoc</h3>
+<div class="def">Functions/operators with the <mark>same name</mark> behave <mark>differently depending on argument types</mark>.</div>
+<ul><li>Compiler picks the implementation at <mark>compile time</mark>.</li><li>Distinguished by <mark>argument types, not return types</mark>.</li><li>Like overloading in Java/C++.</li></ul>
+<pre><code>int add(int a, int b){ return a + b; }
+double add(double a, double b){ return a + b; }
+int result1 = calc.add(5, 10);       // int version
+double result2 = calc.add(3.5, 2.1); // double version</code></pre>
+<div class="ana">The word “open” means something different for a door, a file and a bank account.</div>
+<h3>4c. Subtype</h3>
+<div class="def">A value of a <mark>subtype</mark> can be used wherever a <mark>supertype</mark> is expected. Achieved through inheritance or interface implementation; methods can be overridden.</div>
+<pre><code>class Animal { void speak(){ System.out.println("Animal makes a sound"); } }
+class Dog extends Animal { @Override void speak(){ System.out.println("Woof"); } }
+class Cat extends Animal { @Override void speak(){ System.out.println("Meow"); } }
+Animal a = new Dog();
+a.speak();   // Woof (dynamic dispatch)</code></pre>
+<p><b>Benefits:</b> reuse through inheritance, method overriding, <mark>dynamic dispatch</mark> by object type, flexibility.</p>
+<div class="trap"><b>Pitfall:</b> the <mark>fragile base class problem</mark>: a change to a superclass can unintentionally affect all subclasses.</div>
+<div class="ana">Any licensed driver can drive any vehicle in the “vehicle” class; each vehicle responds in its own way.</div>
+</div></details>
+
+<details><summary>5. Type inference and Hindley-Milner</summary><div class="body">
+<div class="def"><b>Type inference:</b> in statically typed languages the compiler <mark>deduces types automatically</mark>, reducing explicit annotations.</div>
+<div class="def"><b>Hindley-Milner (HM):</b> foundational algorithm that infers the <mark>most general type</mark> of an expression, including polymorphic types. Used in <mark>ML and Haskell</mark>.</div>
+<pre><code>square x = x * x    -- inferred: Num a =&gt; a -&gt; a</code></pre>
+<p><b>Process:</b> (1) <i>x</i> has unknown type; (2) <code>*</code> adds a <b>Num constraint</b>; (3) the algorithm infers <code>Num a =&gt; a -&gt; a</code>. Read it as: for any numeric type a, a function from a to a.</p>
+<p><b>Benefits:</b> concise, readable code; fewer repeated annotations; enables polymorphic functions and data structures; keeps static checking.</p>
+<p>The slide also lists Python, Go, Rust and JavaScript under “other languages” with some form of inference.</p>
+<div class="ana">A detective deducing the suspect’s type from clues (the operators used), without being told.</div>
+</div></details>
+
+<details><summary>6. Dependent types</summary><div class="body">
+<div class="def">Types that <mark>depend on values</mark>. They blur the distinction between the <mark>type level and the term level</mark>. Examples: <mark>Idris, Coq</mark>.</div>
+<p>This allows very precise specifications and compile-time verification of properties that would otherwise need runtime checks or formal proofs. Benefits: enhanced safety, precise specifications, elimination of certain classes of bugs. The slide diagram shows Type and Term depending on each other (Type(A)/Term(A), Type(B)/Term(B)).</p>
+<p><i>Illustration (not on slide):</i> a vector type that includes its length, so “head of an empty vector” does not compile.</p>
+<div class="ana">A parking permit that names the exact vehicle. Types are no longer just categories, they carry facts.</div>
+</div></details>
+
+<details><summary>7. Case study: Rust</summary><div class="body">
+<ul><li><mark>Strong, static typing</mark>: checked rigorously at compile time, runtime errors prevented by construction, <mark>no implicit conversions</mark>.</li>
+<li><mark>Memory safety without a garbage collector</mark>: eliminates null pointer dereferences, prevents data races and use-after-free.</li></ul>
+<pre><code>fn main() {
+    let s1 = String::from("hello"); // s1 owns the data
+    let s2 = s1;                    // ownership MOVED to s2
+    println!("{}", s2);             // valid: "hello"
+    // println!("{}", s1);          // COMPILE-TIME ERROR
+}</code></pre>
+<p><b>Move semantics:</b> assigning <code>s1</code> to <code>s2</code> transfers ownership; <code>s1</code> is no longer valid. (The slide’s last key-points list is cut off, so rely on this example.)</p>
+<div class="ana">Handing over the only house key. You cannot still use it after giving it away.</div>
+<div class="trap"><b>Trap:</b> a move is not a copy, and the error appears at compile time, not at runtime.</div>
+</div></details>
+
+<details><summary>8. Exercises (from the slides)</summary><div class="body">
+<ul><li><b>Static vs dynamic:</b> compare Java and Python on development speed, runtime safety/error detection, performance.</li>
+<li><b>Polymorphism:</b> give C++ and Haskell snippets for parametric (generics) and ad-hoc (overloading) polymorphism.</li>
+<li><b>Research question:</b> the slide text is cut off, so check the original deck.</li></ul>
+<p>Model answers are in the Written tab.</p>
+</div></details>
+</section>
+
+<section id="summary">
+<details open><summary>High-yield summary</summary><div class="body">
+<ul>
+<li><b>Type system</b> = rules assigning types. Jobs: <mark>assign, prevent errors, enable optimization</mark>.
+ <ul><li>Memory trigger: <b>A-P-O</b></li></ul></li>
+<li><b>Static vs dynamic</b> = <mark>when</mark> checked (compile vs run).
+ <ul><li>Static: Rust, Java, C++ · Dynamic: Python, JS, Ruby</li></ul></li>
+<li><b>Strong vs weak</b> = <mark>implicit coercion</mark> (no vs yes).
+ <ul><li>Strong: Rust, Java, Python · Weak: JS, PHP, C</li><li><code>"5"-2=3</code>, <code>"5"+2="52"</code></li></ul></li>
+<li><b>Polymorphism</b> (P-A-S):
+ <ul><li><b>Parametric</b>: generics, type variable <code>T</code>, uniform behaviour</li><li><b>Ad-hoc</b>: overloading, by argument types, compile time</li><li><b>Subtype</b>: subclass used as superclass, overriding, dynamic dispatch, fragile base class</li></ul></li>
+<li><b>Type inference</b>: compiler deduces types. <mark>HM</mark> finds most general type (ML, Haskell). <code>square x = x*x :: Num a =&gt; a -&gt; a</code></li>
+<li><b>Dependent types</b>: types depend on values; Idris, Coq.</li>
+<li><b>Rust</b>: strong + static, no GC, ownership/move, no null deref, no data races, no use-after-free.</li>
+</ul></div></details>
+
+<details open><summary>Memory tools</summary><div class="body">
+<ul>
+<li><b>Chunk it into 3 axes:</b> <i>When</i> (static/dynamic) · <i>How strict</i> (strong/weak) · <i>How reusable</i> (polymorphism).</li>
+<li><b>Mnemonic P-A-S:</b> <b>P</b>laceholder (parametric), <b>A</b>rguments decide (ad-hoc), <b>S</b>ubstitute (subtype).</li>
+<li><b>Static = Soon, Dynamic = During.</b> <b>Strong = Strict conversions.</b></li>
+<li><b>Spaced repetition:</b> redo the MCQs after 1 day, 3 days, 7 days and 14 days; retry only the ones you missed.</li>
+</ul>
+<div class="tw"><table><tr><th>Often confused</th><th>Key difference</th></tr>
+<tr><td>Static vs strong</td><td>Timing of checks vs willingness to coerce. Python = dynamic + strong; C = static + weak.</td></tr>
+<tr><td>Parametric vs ad-hoc</td><td>One generic body for all types vs separate bodies chosen by argument types.</td></tr>
+<tr><td>Ad-hoc vs subtype</td><td>Compile-time choice by argument types vs runtime dispatch by object type.</td></tr>
+<tr><td>Inference vs dynamic</td><td>Inference is still static: types are fixed at compile time, just not written.</td></tr></table></div>
+<div class="trap"><b>Common mistakes:</b> saying overloading depends on return type; saying Python is weakly typed; calling Rust’s ownership error a runtime error; mixing up <code>"5"-2</code> (3) and <code>"5"+2</code> ("52").</div>
+</div></details>
+</section>
+
+<section id="mcq">
+<div class="bar"><button id="shuf">Reset quiz</button><button id="hard">Show hard only</button><span class="score" id="score">Score 0 / 0</span></div>
+<div id="mcqs"></div>
+</section>
+
+<section id="written"><div id="wq"></div></section>
+
+<section id="rev">
+<details open><summary>One-page revision sheet</summary><div class="body">
+<h3>Definitions</h3>
+<ul><li><b>Type system:</b> rules assigning types to variables, expressions, functions.</li>
+<li><b>Static:</b> checked at compile time. <b>Dynamic:</b> at runtime.</li>
+<li><b>Strong:</b> no implicit coercion. <b>Weak:</b> implicit coercion.</li>
+<li><b>Parametric:</b> generic, type variables. <b>Ad-hoc:</b> same name, behaviour by argument types. <b>Subtype:</b> subtype usable as supertype.</li>
+<li><b>HM:</b> infers most general type (ML, Haskell). <b>Dependent types:</b> types depend on values (Idris, Coq).</li></ul>
+<h3>Rules and facts to recall instantly</h3>
+<ul><li><code>"5" - 2 = 3</code> · <code>"5" + 2 = "52"</code></li>
+<li><code>square x = x * x</code> gives <code>Num a =&gt; a -&gt; a</code></li>
+<li>Overloading: argument types only, never return type; resolved at compile time.</li>
+<li>Subtype polymorphism: dynamic dispatch; risk = fragile base class.</li>
+<li>Rust: <code>let s2 = s1;</code> moves; using s1 afterwards = compile-time error. No GC.</li>
+<li>Languages: Static: Rust, Java, C++ · Dynamic: Python, JS, Ruby · Strong: Rust, Java, Python · Weak: JS, PHP, C.</li></ul>
+</div></details>
+<details open><summary>Night-before checklist</summary><div class="body chk">
+<label><input type="checkbox"> I can define a type system and its 3 jobs</label>
+<label><input type="checkbox"> I can separate static/dynamic from strong/weak with 2 examples each</label>
+<label><input type="checkbox"> I can write both JS coercion lines from memory</label>
+<label><input type="checkbox"> I can name, define and exemplify the 3 polymorphisms</label>
+<label><input type="checkbox"> I can explain HM and read <code>Num a =&gt; a -&gt; a</code></label>
+<label><input type="checkbox"> I can explain the Rust move error and why there is no GC</label>
+<label><input type="checkbox"> I scored 80%+ on the MCQs</label>
+</div></details>
+</section>
+</main>
+
+<script>
+const $=s=>document.querySelector(s);
+const tabs=[["explain","Explanation"],["summary","Summary"],["mcq","MCQs"],["written","Written"],["rev","Revision sheet"]];
+const tb=$("#tabs");
+tabs.forEach(([id,l],i)=>{const b=document.createElement("button");b.textContent=l;b.setAttribute("role","tab");b.dataset.id=id;b.onclick=()=>show(id);tb.appendChild(b)});
+function show(id){tb.querySelectorAll("button").forEach(b=>b.setAttribute("aria-selected",b.dataset.id===id));document.querySelectorAll("section").forEach(s=>s.classList.toggle("on",s.id===id));window.scrollTo({top:0});try{location.hash=id}catch(e){}}
+const th=$("#theme");
+function setTheme(t){document.documentElement.dataset.theme=t;th.textContent=t==="dark"?"Light mode":"Dark mode"}
+setTheme(matchMedia("(prefers-color-scheme:dark)").matches?"dark":"light");
+th.onclick=()=>setTheme(document.documentElement.dataset.theme==="dark"?"light":"dark");
+
+// [question, [options], correctIndex, explanation, level]
+const Q=[
+["A type system is best defined as…",["A compiler optimisation pass","A set of rules assigning types to variables, expressions and functions","A runtime garbage collector","A syntax checker for keywords"],1,"Core definition from the slides.","Easy"],
+["Which is NOT a stated role of a type system?",["Assigning types to constructs","Preventing invalid operations early","Enabling compiler optimizations","Removing the need for any testing"],3,"The slides list assign, prevent errors, enable optimizations. Nothing removes testing.","Easy"],
+["Static typing means type checking happens…",["At compile time","At runtime","Only when exceptions occur","During linking only"],0,"Static = compile time.","Easy"],
+["Which language is dynamically typed?",["Rust","Java","Python","C++"],2,"Python and JavaScript/Ruby are dynamic.","Easy"],
+["In JavaScript, what does <code>\"5\" - 2</code> give?",["\"52\"","3","NaN error at compile time","\"3\""],1,"The string is implicitly converted to a number, so 3.","Easy"],
+["In JavaScript, what does <code>\"5\" + 2</code> give?",["7","\"52\"","\"7\"","TypeError"],1,"The number 2 is implicitly converted to a string, so concatenation gives \"52\".","Easy"],
+["Weak typing is characterised by…",["Runtime checking","Implicit type coercion","No types at all","Generics"],1,"Weak = implicit coercion.","Easy"],
+["In <code>Box&lt;T&gt;</code>, what is <code>T</code>?",["A concrete class","A type variable (placeholder)","A runtime value","A method"],1,"Type variables are placeholders instantiated with concrete types.","Easy"],
+["Which language pair is both strong and static in the slides?",["Rust and Java","JavaScript and PHP","Python and Ruby","C and PHP"],0,"Rust and Java are listed as strong and static.","Medium"],
+["Which is dynamic AND strong?",["Python","JavaScript","C","PHP"],0,"Python is dynamic but strong: it does not implicitly coerce (e.g. it rejects \"5\"+2).","Medium"],
+["Parametric polymorphism is characterised by…",["Same name, different behaviour per argument type","Generic code that works uniformly across types","Overriding in subclasses","Runtime type checks"],1,"Uniform behaviour regardless of the specific type.","Medium"],
+["Overloaded methods are distinguished by…",["Return type only","Argument types","Class name","Method visibility"],1,"Argument types, not return types.","Medium"],
+["Per the slides, when is an overloaded method chosen?",["At compile time","At runtime by object type","At link time","At startup"],0,"Ad-hoc polymorphism is resolved by the compiler.","Medium"],
+["<code>Animal a = new Dog(); a.speak();</code> prints…",["Animal makes a sound","Woof","Meow","Compile error"],1,"Overriding plus dynamic dispatch on the object’s real type.","Medium"],
+["The “fragile base class problem” means…",["Base classes cannot be generic","Superclass changes may unintentionally affect subclasses","Subclasses cannot override","Interfaces are slow"],1,"A pitfall of inheritance-based subtype polymorphism.","Medium"],
+["Hindley-Milner is used in…",["ML and Haskell","C and PHP","Java servlets only","Assembly"],0,"The slide names ML and Haskell.","Medium"],
+["<code>square x = x * x</code> is inferred as…",["Int -&gt; Int","a -&gt; a","Num a =&gt; a -&gt; a","String -&gt; String"],2,"The * operator adds a Num constraint, so the type is general over numeric types.","Medium"],
+["Hindley-Milner infers…",["Any valid type at random","The most general type, including polymorphic types","Only runtime types","Only primitive types"],1,"Key HM property.","Medium"],
+["Dependent types are types that…",["Depend on runtime exceptions","Depend on values","Depend on the OS","Depend on subclasses"],1,"They blur type level and term level (Idris, Coq).","Medium"],
+["In Rust, <code>let s2 = s1;</code> followed by <code>println!(\"{}\", s1);</code> results in…",["Prints hello twice","A runtime panic","A compile-time error","A garbage-collected copy"],2,"Ownership moved to s2; s1 is invalid, caught at compile time.","Hard"],
+["How does Rust achieve memory safety?",["A tracing garbage collector","Ownership and move semantics without a GC","Dynamic typing","Manual free() calls"],1,"Memory safety without a garbage collector.","Hard"],
+["TRICK: “Static typing implies strong typing.” This is…",["True always","False: C is static but weakly typed","False: static languages never coerce","True for C only"],1,"The axes are independent. The slides list C as weak and C++ as static.","Hard"],
+["Java <code>int x = \"hello\";</code> vs Python <code>x = \"hello\"</code>. Which is correct?",["Both fail at runtime","Java errors at compile time; Python accepts it","Python errors at compile time","Both accept it"],1,"Static catches it early; dynamic allows rebinding.","Hard"],
+["Which is NOT a Rust guarantee on the slides?",["No null pointer dereferences","No data races","No use-after-free","Implicit type conversions between types"],3,"Rust has no implicit type conversions.","Hard"],
+["Which polymorphism enables dynamic dispatch?",["Parametric","Ad-hoc (overloading)","Subtype","None"],2,"Subtype polymorphism: method chosen by object type at runtime.","Hard"],
+["Which feature blurs the line between types and terms?",["Overloading","Dependent types","Weak typing","Garbage collection"],1,"Types may depend on values.","Hard"]
+];
+let score=0,done=0,hardOnly=false;
+function renderQ(){
+ const box=$("#mcqs");box.innerHTML="";score=0;done=0;upd();
+ Q.forEach((q,i)=>{if(hardOnly&&q[4]!=="Hard")return;
+  const d=document.createElement("div");d.className="q";
+  d.innerHTML='<h3>Q'+(i+1)+'. '+q[0]+'<span class="lvl">'+q[4]+'</span></h3>';
+  const ex=document.createElement("div");ex.className="exp";ex.innerHTML="<b>Why:</b> "+q[3];
+  q[1].forEach((o,j)=>{const b=document.createElement("button");b.className="opt";b.innerHTML=String.fromCharCode(65+j)+". "+o;
+   b.onclick=()=>{if(d.dataset.a)return;d.dataset.a=1;done++;
+    const bs=d.querySelectorAll(".opt");bs.forEach(x=>x.disabled=true);bs[q[2]].classList.add("ok");
+    if(j===q[2])score++;else b.classList.add("no");ex.classList.add("on");upd()};d.appendChild(b)});
+  const t=document.createElement("button");t.className="rev";t.textContent="Toggle explanation";t.onclick=()=>ex.classList.toggle("on");
+  d.appendChild(t);d.appendChild(ex);box.appendChild(d)})}
+function upd(){$("#score").textContent="Score "+score+" / "+done}
+$("#shuf").onclick=renderQ;
+$("#hard").onclick=e=>{hardOnly=!hardOnly;e.target.textContent=hardOnly?"Show all":"Show hard only";renderQ()};
+
+const W=[
+["Short","Define a type system and state its three roles.","A type system is a set of rules that assigns a type to constructs such as variables, expressions and functions. It (1) <mark>assigns types</mark> so operations depend on them, (2) <mark>prevents errors</mark> by catching invalid operations early, and (3) <mark>enables optimizations</mark> by letting the compiler assume memory layout and operations."],
+["Short","Distinguish static from dynamic typing with one example each.","Static typing checks types at <mark>compile time</mark> (Java: <code>int x = \"hello\";</code> is a compile error). Dynamic typing checks at <mark>runtime</mark> (Python: <code>x = \"hello\"; x = 5</code> is valid). Static gives early errors and faster execution; dynamic gives flexibility."],
+["Short","Explain weak typing using JavaScript.","Weak typing allows <mark>implicit coercion</mark>. In JavaScript, <code>\"5\" - 2</code> gives 3 (string to number) while <code>\"5\" + 2</code> gives \"52\" (number to string). Flexible, but it can hide bugs. Strong languages (Rust, Java, Python) require explicit conversions."],
+["Short","What is the fragile base class problem?","A pitfall of subtype polymorphism via inheritance: a change in a superclass can unintentionally alter or break the behaviour of every subclass that depends on it."],
+["Long","Exercise 1: Compare static and dynamic typing using Java and Python (productivity, safety, performance).",
+`<b>Intro:</b> static typing (Java) checks at compile time; dynamic typing (Python) checks at runtime.<br><b>Productivity:</b> Python is faster to write: no declarations, quick prototyping, a variable can change type (<code>x = "hello"; x = 5</code>). Java needs annotations, but its types document intent and aid tooling and large-team maintenance.<br><b>Safety and error detection:</b> Java rejects <code>int x = "hello";</code> before the program runs, giving strong guarantees. In Python, type errors appear only when that line executes, so they may reach production unless tests cover them. (Python is still strongly typed: no implicit coercion.)<br><b>Performance:</b> Java’s static types let the compiler assume memory layout and optimise, giving faster execution. Python incurs runtime type-checking overhead.<br><b>Conclusion:</b> static suits large, performance- and safety-critical systems; dynamic suits scripting, prototyping and flexibility.`],
+["Long","Exercise 2: Demonstrate parametric and ad-hoc polymorphism in C++ and Haskell.",
+`<b>Parametric</b> (one generic body, type variable):
+<pre><code>// C++
+template&lt;typename T&gt; struct Box { T value; };
+Box&lt;int&gt; a{5}; Box&lt;std::string&gt; b{"hi"};
+
+-- Haskell
+data Box a = Box a
+identity :: a -&gt; a
+identity x = x</code></pre>
+<b>Ad-hoc</b> (same name, behaviour chosen by argument types):
+<pre><code>// C++ overloading (resolved at compile time)
+int    add(int a, int b)       { return a + b; }
+double add(double a, double b) { return a + b; }
+
+-- Haskell: type classes provide ad-hoc polymorphism
+class Addable a where add :: a -&gt; a -&gt; a
+instance Addable Int    where add x y = x + y
+instance Addable Double where add x y = x + y</code></pre>
+Note: Haskell has no C++-style overloading by function name; it uses type classes (the Haskell <code>(+)</code> is itself a class method). Distinguish clearly: parametric = uniform for all types; ad-hoc = different implementation per type.`],
+["Long","Explain Rust’s type system and ownership, with an example.",
+`Rust is <mark>strongly and statically typed</mark>: types are checked rigorously at compile time and there are no implicit conversions, preventing runtime errors by construction. It provides <mark>memory safety without a garbage collector</mark>: no null pointer dereferences, no data races, no use-after-free.<br>The ownership system makes this work through move semantics:
+<pre><code>let s1 = String::from("hello"); // s1 owns the data
+let s2 = s1;                    // ownership moves to s2
+println!("{}", s2);             // OK
+// println!("{}", s1);          // COMPILE-TIME ERROR</code></pre>
+After the move, s1 is invalid, so two owners can never free the same memory, and misuse is rejected before the program runs.`],
+["Long","Explain Hindley-Milner type inference and why it matters.",
+`Type inference lets the compiler deduce types automatically. <mark>Hindley-Milner</mark> infers the <mark>most general type</mark> of an expression, including polymorphic types, and is used in ML and Haskell. Example: <code>square x = x * x</code>. The type of x is unknown; the use of <code>*</code> adds a Num constraint; HM infers <code>Num a =&gt; a -&gt; a</code>. Benefits: concise, readable code, fewer annotations, polymorphic functions, and full static checking retained.`]
+];
+const wq=$("#wq");
+W.forEach((w,i)=>{const d=document.createElement("div");d.className="q";
+ d.innerHTML='<h3>'+w[0]+' · '+w[1]+'</h3><button class="rev">Show model answer</button><div class="ans">'+w[2]+'</div>';
+ const a=d.querySelector(".ans");d.querySelector("button").onclick=e=>{a.classList.toggle("on");e.target.textContent=a.classList.contains("on")?"Hide model answer":"Show model answer"};wq.appendChild(d)});
+
+renderQ();
+const h=(location.hash||"").slice(1);show(tabs.some(t=>t[0]===h)?h:"explain");
+</script>
+</body>
+</html>
