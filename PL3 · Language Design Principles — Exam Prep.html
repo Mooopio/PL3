@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>PL3 · Language Design Principles — Exam Prep</title>
+<style>
+:root{--bg:#f7f8fa;--card:#fff;--tx:#1b2330;--mu:#5d6878;--ac:#3b6cf6;--ok:#12805c;--bad:#c23a3a;--hl:#fff3b8;--bd:#e1e5ec;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#10141b;--card:#181e28;--tx:#e6eaf2;--mu:#9aa6b8;--ac:#7c9cff;--ok:#43c79a;--bad:#ff7b7b;--hl:#5a4a00;--bd:#2a3342;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#10141b;--card:#181e28;--tx:#e6eaf2;--mu:#9aa6b8;--ac:#7c9cff;--ok:#43c79a;--bad:#ff7b7b;--hl:#5a4a00;--bd:#2a3342;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.65 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--card);z-index:10}
+header{position:sticky;top:env(safe-area-inset-top,0px);background:var(--card);border-bottom:1px solid var(--bd);z-index:9;padding:10px 16px}
+.row{max-width:900px;margin:auto;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+h1{font-size:1.05rem;margin:0;flex:1}
+nav{display:flex;gap:6px;overflow-x:auto;max-width:900px;margin:8px auto 0;padding-bottom:2px}
+button{font:inherit;cursor:pointer;border:1px solid var(--bd);background:var(--bg);color:var(--tx);border-radius:999px;padding:6px 14px;white-space:nowrap;transition:.2s}
+button:hover{border-color:var(--ac)}button.on{background:var(--ac);color:#fff;border-color:var(--ac)}
+main{max-width:900px;margin:auto;padding:18px 16px 60px}
+section{display:none;animation:f .35s}section.on{display:block}@keyframes f{from{opacity:0;transform:translateY(8px)}to{opacity:1}}
+details{background:var(--card);border:1px solid var(--bd);border-radius:12px;margin:10px 0;padding:4px 16px}
+summary{cursor:pointer;font-weight:600;padding:10px 0}details[open]>summary{color:var(--ac)}
+h2{margin:6px 0 12px}h3{margin:14px 0 4px}
+mark{background:var(--hl);color:inherit;padding:0 3px;border-radius:3px}
+.box{background:var(--card);border:1px solid var(--bd);border-left:4px solid var(--ac);border-radius:10px;padding:10px 14px;margin:10px 0}
+.warn{border-left-color:var(--bad)}.tip{border-left-color:var(--ok)}
+.tw{overflow-x:auto}table{border-collapse:collapse;width:100%;min-width:480px;background:var(--card)}th,td{border:1px solid var(--bd);padding:8px;text-align:left;vertical-align:top;font-size:.93rem}th{background:var(--bg)}
+code,pre{font-family:ui-monospace,Consolas,monospace;font-size:.88rem}
+.q{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:12px 16px;margin:12px 0}
+.o{display:block;width:100%;text-align:left;border-radius:10px;margin:6px 0;white-space:normal}
+.o.ok{background:var(--ok);color:#fff;border-color:var(--ok)}.o.no{background:var(--bad);color:#fff;border-color:var(--bad)}
+.ex{display:none;margin-top:8px;color:var(--mu)}.ex.show{display:block}
+.tag{font-size:.75rem;color:var(--mu)}#sc{font-weight:700;color:var(--ac)}
+ul{padding-left:20px}
+</style></head><body>
+<header><div class="row"><h1>📘 PL3 · Language Design Principles</h1><button id="th" aria-label="Toggle theme">🌓</button></div>
+<nav id="nav"></nav></header>
+<main>
+<section id="explain"></section><section id="summary"></section><section id="memory"></section><section id="mcq"></section><section id="written"></section><section id="rev"></section>
+</main>
+<script>
+const $=s=>document.querySelector(s);
+const tabs=[['explain','Explanation'],['summary','Summary'],['memory','Memory'],['mcq','MCQs'],['written','Written'],['rev','Revision']];
+const nav=$('#nav');
+tabs.forEach(([id,t],i)=>{const b=document.createElement('button');b.textContent=t;b.onclick=()=>show(id);b.dataset.id=id;nav.appendChild(b)});
+function show(id){document.querySelectorAll('section').forEach(s=>s.classList.toggle('on',s.id===id));nav.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.id===id));window.scrollTo({top:0,behavior:'smooth'});try{localStorage.setItem('pl3tab',id)}catch(e){}}
+$('#th').onclick=()=>{const r=document.documentElement;const d=getComputedStyle(r).getPropertyValue('--bg').trim()==='#10141b';r.dataset.theme=d?'light':'dark'};
+
+const D=(t,h,o)=>`<details${o?' open':''}><summary>${t}</summary>${h}</details>`;
+$('#explain').innerHTML='<h2>Deep Explanation</h2>'+
+D('1. Why do programming languages evolve?',`<p>Languages are <mark>tools built for a job</mark>. When hardware improves and <mark>new application domains</mark> appear (web, data, multicore), old tools fit badly, so new ones emerge.</p>
+<ul><li><b>Historical context:</b> early languages were <mark>problem-specific</mark>.</li><li><b>New needs:</b> hardware capabilities advanced; new domains emerged; specific environment requirements.</li></ul>
+<div class="box tip">🧠 Analogy: a hammer, a screwdriver and a saw all exist because one tool can’t do every job well. Languages are the same.</div>
+<p><i>Slide quote:</i> as hardware advanced and new domains emerged, the need for languages tailored to these requirements became apparent.</p>`,1)+
+D('2. Early problem-specific languages',`<h3>FORTRAN (1957, IBM)</h3><p><b>FORmula TRANslation</b>: first widely used high-level language, for scientific and mathematical computing. Contributions: let programmers use <mark>mathematical notation</mark>; greatly improved efficiency for numerical calculation; cornerstone of high-performance computing.</p>
+<h3>COBOL (1959, Grace Hopper)</h3><p><b>COMmon Business-Oriented Language</b>: for business data processing and reporting. Contributions: <mark>English-like syntax</mark> (accessible), <mark>self-documenting</mark> code, met business-processing needs. First business-oriented language.</p>
+<div class="box">Takeaway: early languages reflected the computational needs of their era.</div>`)+
+D('3. Evolution driven by new needs (domains)',`<div class="tw"><table><tr><th>Domain</th><th>Why it created demand</th><th>Languages</th></tr>
+<tr><td>Web development</td><td>Internet needed dynamic content</td><td>JavaScript, PHP</td></tr>
+<tr><td>Data science</td><td>Data explosion → statistical computing</td><td>Python, R</td></tr>
+<tr><td>Systems programming</td><td>Efficient, close-to-hardware control (OS, low-level)</td><td>C, Rust</td></tr>
+<tr><td>Concurrency</td><td>Multi-core and distributed systems</td><td>Go, Erlang</td></tr></table></div>`)+
+D('4. Evolution timeline',`<div class="tw"><table><tr><th>Decade</th><th>Language</th><th>Domain / key features</th></tr>
+<tr><td>1950s</td><td>FORTRAN</td><td>Scientific computing; first high-level language, numerical efficiency</td></tr>
+<tr><td>1950s</td><td>COBOL</td><td>Business reporting; English-like syntax, data processing</td></tr>
+<tr><td>1970s</td><td>C</td><td>Systems; efficiency, low-level access, structured programming</td></tr>
+<tr><td>1970s</td><td>Smalltalk</td><td>Simulation, OOP; pure object-oriented, GUI concepts</td></tr>
+<tr><td>1990s</td><td>Java</td><td>Web, enterprise; “write once, run anywhere”, platform independence</td></tr>
+<tr><td>1990s</td><td>Python</td><td>General purpose; readability, simplicity, extensive libraries</td></tr>
+<tr><td>2010s</td><td>Rust</td><td>Systems; memory safety, concurrency, performance</td></tr>
+<tr><td>2010s</td><td>Go</td><td>Systems, cloud; concurrency, simplicity, fast compilation</td></tr>
+<tr><td>2010s</td><td>Kotlin / Swift</td><td>Android / iOS-macOS development</td></tr></table></div>`)+
+D('5. Goals of a language (5 design principles)',`<p>Design is <mark>deliberate</mark>: goals shape syntax, semantics and suitability for tasks.</p>
+<ul><li><b>Readability</b>: clarity for humans; clear syntax, intuitive naming, structured constructs; lowers cognitive load, helps collaboration.</li>
+<li><b>Reliability</b>: fewer errors, predictable behavior; strong typing, robust error handling, memory safety.</li>
+<li><b>Efficiency</b>: effective use of resources; low-level control, native compilation, minimal runtime overhead.</li>
+<li><b>Portability</b>: runs with minimal changes across hardware/OS; standardized specifications, virtual machines, multi-architecture compilers.</li>
+<li><b>Expressiveness</b>: complex ideas in few lines; concise syntax, rich abstractions, higher productivity.</li></ul>
+<div class="box">Designers must <mark>balance</mark> these principles based on the intended use case.</div>`)+
+D('6. Design trade-offs',`<p>Maximizing every quality at once is <mark>impossible</mark>, so designers prioritize.</p>
+<h3>Readability vs Performance — Python vs C</h3><p>Python: human-readable, indentation defines blocks, dynamic typing, interpreted → readability often costs performance. C: terse, explicit memory management, low-level hardware control, compiles to native code → performance often costs readability.</p>
+<h3>Safety vs Flexibility — Rust vs C++</h3><p>Rust: strict <mark>ownership</mark>, borrow checker enforces memory safety at compile time, prevents null dereferences and data races; steeper learning curve. C++: immense flexibility and control, great for performance-critical work, but higher risk of memory errors and needs diligent practice.</p>
+<h3>Simplicity vs Expressiveness — Go vs Scala</h3><p>Go: minimal features, easy to learn, clear syntax, but more verbose. Scala: combines OOP and FP, concise code, rich abstractions, but steep learning curve. Simple languages are easier to learn but may need more code.</p>`)+
+D('7. The Language Design Triangle',`<p>Three vertices: <b>Safety</b> (prevents errors at compile time; Rust: strict memory rules), <b>Simplicity</b> (minimal features; Go: minimal syntax), <b>Performance</b> (execution speed; C: close to hardware). Languages make deliberate trade-offs to serve their purpose; you can’t sit at all three corners.</p>`)+
+D('8. Case studies',`<h3>Python — readability first</h3><p>Indentation-based blocks, clear syntax, interpreted (dynamic typing), large ecosystem, strong community and consistent syntax across versions. <i>“Readability counts. Code is read much more often than it is written.”</i> (PEP 20). Slide note: Python needs fewer lines than Rust (10), Go (8), C (6) for hello-world.</p>
+<h3>Rust — safety without sacrifice</h3><p>Ownership model: no null pointer dereferences (initialize before use), no data races (borrow checker), no double-frees (each value has a unique owner). Memory safety <mark>without GC</mark>, no runtime overhead, close-to-hardware control; steep learning curve.</p>
+<h3>Go — simplicity and concurrency</h3><p>Developed at <mark>Google</mark>. Minimal syntax, fast compilation, goroutines and channels, fast execution. Used for network services/APIs, distributed systems, microservices.</p>
+<h3>JavaScript — the web’s lingua franca</h3><p>Early: simplicity and expressiveness for rapid web development. Trade-off: sacrificed strict safety and raw performance. Modern: <mark>JIT compilation (V8)</mark> improved speed; safety addressed via TypeScript and external tools. Moved toward the Performance vertex while keeping Simplicity and Expressiveness.</p>
+<h3>Elixir — embracing concurrency</h3><p>Built on the <mark>Erlang VM (BEAM)</mark>; concurrent, distributed, fault-tolerant. “Let it crash”: processes are isolated so failures don’t crash the app. Nodes communicate by message passing; lightweight processes give high throughput, good for IO-bound tasks.</p>`)+
+D('9. Language comparison',`<div class="tw"><table><tr><th>Language</th><th>Priority</th><th>Notes</th></tr><tr><td>Python</td><td>Readability, simplicity</td><td>Sacrifices safety and performance</td></tr><tr><td>Rust</td><td>Safety + performance</td><td>Steeper learning curve, less immediate readability</td></tr><tr><td>Go</td><td>Simplicity + performance</td><td>Readable, built-in concurrency, fast compilation</td></tr><tr><td>JavaScript</td><td>Simplicity, expressiveness</td><td>JIT improved speed</td></tr><tr><td>Elixir</td><td>Concurrency, fault tolerance</td><td>BEAM VM</td></tr></table></div>`);
+
+$('#summary').innerHTML='<h2>Smart Summary</h2><div class="box"><ul>'+[
+'<b>Why evolve?</b> New <mark>hardware</mark> + new <mark>domains</mark> → new languages',
+'<ul><li>FORTRAN 1957 (science, IBM) · COBOL 1959 (business, Grace Hopper)</li><li>Web: JS/PHP · Data: Python/R · Systems: C/Rust · Concurrency: Go/Erlang</li></ul>',
+'<b>5 goals:</b> Readability · Reliability · Efficiency · Portability · Expressiveness',
+'<b>3 trade-offs:</b> Readability↔Performance (Python/C) · Safety↔Flexibility (Rust/C++) · Simplicity↔Expressiveness (Go/Scala)',
+'<b>Triangle:</b> Safety (Rust) · Simplicity (Go) · Performance (C)',
+'<b>Python:</b> readability, indentation, interpreted, big ecosystem',
+'<b>Rust:</b> ownership + borrow checker, no GC, compile-time safety',
+'<b>Go:</b> Google, goroutines/channels, minimal, fast compile',
+'<b>JavaScript:</b> web, JIT (V8), TypeScript for safety',
+'<b>Elixir:</b> BEAM, “let it crash”, message passing, fault tolerance'
+].map(x=>x.startsWith('<ul>')?x:'<li>'+x+'</li>').join('')+'</ul></div>';
+
+$('#memory').innerHTML='<h2>Memory Optimization</h2>'+
+D('Mnemonics',`<div class="box tip"><b>R-R-E-P-E</b> → “<i>Really Raw Eggs Pose Everyday</i>”: <b>R</b>eadability, <b>R</b>eliability, <b>E</b>fficiency, <b>P</b>ortability, <b>E</b>xpressiveness.</div>
+<div class="box tip"><b>Triangle = S-S-P:</b> Safety→Rust, Simplicity→Go, Performance→C.</div>
+<div class="box tip"><b>Dates:</b> FORTRAN 57, COBOL 59 → “F is for First, C comes two later.” Decades: 50s (F, COBOL), 70s (C, Smalltalk), 90s (Java, Python), 2010s (Rust, Go, Kotlin, Swift).</div>
+<div class="box tip"><b>Trade-off pairs:</b> Python↔C, Rust↔C++, Go↔Scala.</div>`,1)+
+D('Comparison tables',`<div class="tw"><table><tr><th></th><th>Python</th><th>C</th><th>Rust</th><th>C++</th><th>Go</th><th>Scala</th></tr>
+<tr><th>Favors</th><td>Readability</td><td>Performance</td><td>Safety</td><td>Flexibility</td><td>Simplicity</td><td>Expressiveness</td></tr>
+<tr><th>Cost</th><td>Speed</td><td>Readability</td><td>Learning curve</td><td>Memory errors</td><td>Verbose</td><td>Steep curve</td></tr></table></div>
+<div class="tw"><table><tr><th>FORTRAN</th><th>COBOL</th></tr><tr><td>1957 IBM · scientific · math notation</td><td>1959 Grace Hopper · business · English-like, self-documenting</td></tr></table></div>`)+
+D('Common mistakes & traps',`<div class="box warn"><ul><li>Rust has <b>no garbage collector</b>; safety is enforced at <b>compile time</b>, not runtime.</li><li>Go’s concurrency = <b>goroutines + channels</b> (Elixir uses processes + messages).</li><li>Python is <b>interpreted + dynamically typed</b>; readability costs performance.</li><li>FORTRAN ≠ business; COBOL ≠ science.</li><li>Trade-offs mean <b>no language wins everything</b>.</li><li>JavaScript improved speed via <b>JIT (V8)</b>; safety via TypeScript.</li></ul></div>`)+
+D('Spaced repetition plan',`<div class="box">Review: <b>Day 0</b> read → <b>Day 1</b> quiz yourself on MCQs → <b>Day 3</b> redo missed MCQs + written → <b>Day 7</b> Revision sheet → <b>Night before</b> Revision sheet only. Chunk: (1) history, (2) 5 goals, (3) 3 trade-offs, (4) 5 case studies.</div>`);
+
+const M=[
+['FORTRAN was designed primarily for:',['Business reporting','Scientific and mathematical computing','Web development','Concurrency'],1,'FORmula TRANslation (1957, IBM) targeted scientific computing.'],
+['Which language was developed with Grace Hopper’s name attached (1959)?',['FORTRAN','C','COBOL','Smalltalk'],2,'COBOL: business-oriented, English-like syntax.'],
+['Main reason new languages emerge:',['Fashion','New hardware and new application domains','Lack of compilers','Marketing'],1,'Evolution is driven by new needs and technological progress.'],
+['Which pair is matched with Data Science?',['Go, Erlang','JavaScript, PHP','Python, R','C, Rust'],2,'Data explosion created demand for statistical tools: Python and R.'],
+['Concurrency demand (multi-core, distributed) produced:',['Go and Erlang','C and Rust','PHP and R','COBOL and Java'],0,'Go and Erlang target efficient concurrent operations.'],
+['Java’s signature feature (1990s):',['Memory safety without GC','Write once, run anywhere','Goroutines','Let it crash'],1,'Platform independence via virtual machine.'],
+['Which is NOT one of the five core design goals on the slides?',['Portability','Expressiveness','Profitability','Reliability'],2,'The five are Readability, Reliability, Efficiency, Portability, Expressiveness.'],
+['Strong typing, robust error handling and memory safety support which goal?',['Readability','Reliability','Efficiency','Expressiveness'],1,'These are reliability features.'],
+['Low-level control, native compilation and minimal runtime overhead support:',['Efficiency','Portability','Readability','Simplicity'],0,'These are efficiency features.'],
+['Virtual machines and standardized specifications mainly support:',['Efficiency','Reliability','Portability','Safety'],2,'Portability lets code run across platforms.'],
+['Python vs C illustrates which trade-off?',['Safety vs Flexibility','Readability vs Performance','Simplicity vs Expressiveness','Portability vs Safety'],1,'Python: readability; C: performance.'],
+['Rust vs C++ illustrates:',['Safety vs Flexibility','Readability vs Performance','Concurrency vs Speed','Typing vs Syntax'],0,'Rust is safety-first; C++ is flexibility-first.'],
+['Tricky: Rust achieves memory safety using:',['A garbage collector','Runtime checks only','Ownership and a borrow checker at compile time','Manual free()'],2,'No GC; compile-time ownership rules, no runtime overhead.'],
+['Which is NOT prevented by Rust’s ownership model?',['Null pointer dereferences','Data races','Double-frees','Slow compile times'],3,'Compile time is not a safety issue Rust claims to prevent (and it is a known cost).'],
+['Go vs Scala illustrates:',['Simplicity vs Expressiveness','Safety vs Speed','Portability vs Efficiency','OOP vs Procedural'],0,'Go is minimal (more verbose); Scala is rich (steep learning curve).'],
+['The three vertices of the Language Design Triangle:',['Speed, Cost, Time','Safety, Simplicity, Performance','Readability, Portability, Typing','Safety, Concurrency, Syntax'],1,'Rust, Go and C anchor them respectively.'],
+['Go was developed at:',['Mozilla','Google','Sun','IBM'],1,'Go is from Google, built for scalable network services.'],
+['Tricky: JavaScript’s performance improved mainly through:',['Static typing','JIT compilation (V8)','A borrow checker','The BEAM VM'],1,'JIT (V8) sped it up; TypeScript addressed safety.'],
+['Elixir runs on:',['JVM','V8','BEAM (Erlang VM)','LLVM only'],2,'Elixir is built on the Erlang VM.'],
+['“Let it crash” means:',['Ignore errors','Isolated processes so failures don’t take down the app','Use exceptions everywhere','Disable the GC'],1,'Fault tolerance through isolated processes and message passing.'],
+['Hard: A team needs a critical systems project with no GC overhead and compile-time safety. Best fit from the slides?',['Python','Rust','JavaScript','COBOL'],1,'Rust: memory safety, performance, close-to-hardware control.'],
+['Tricky: “Readability counts” is quoted from:',['The C standard','PEP 20 (Python)','The Go spec','Rust book'],1,'PEP 20, the Zen of Python.'],
+['Which language fits Smalltalk’s 1970s contribution?',['Pure OOP and GUI concepts','Memory safety','Scientific computing','Web scripting'],0,'Smalltalk: simulation, pure object-oriented, GUI concepts.']
+];
+let score=0,done=0;
+$('#mcq').innerHTML='<h2>MCQs <span class="tag">(tap an answer)</span></h2><p>Score: <span id="sc">0/0</span> of '+M.length+' <button onclick="location.reload()">Reset</button></p><div id="ml"></div>';
+M.forEach((m,i)=>{const d=document.createElement('div');d.className='q';
+d.innerHTML=`<div class="tag">Q${i+1} · ${i<8?'Easy':i<17?'Medium':'Hard'}</div><b>${m[0]}</b>`;
+m[1].forEach((o,j)=>{const b=document.createElement('button');b.className='o';b.textContent=String.fromCharCode(65+j)+'. '+o;
+b.onclick=()=>{if(d.dataset.d)return;d.dataset.d=1;done++;if(j===m[2])score++;b.classList.add(j===m[2]?'ok':'no');d.querySelectorAll('.o')[m[2]].classList.add('ok');ex.classList.add('show');$('#sc').textContent=score+'/'+done};d.appendChild(b)});
+const ex=document.createElement('div');ex.className='ex';ex.textContent='✔ '+m[3];d.appendChild(ex);$('#ml').appendChild(d)});
+
+const W=[
+['Short: Why do new programming languages emerge?','Because hardware capabilities advance and new application domains appear with specific needs. Early languages were problem-specific (FORTRAN for science, COBOL for business); later domains created JavaScript/PHP (web), Python/R (data), C/Rust (systems), Go/Erlang (concurrency).'],
+['Short: Define Readability, Reliability and Efficiency as design goals.','Readability: clarity for humans through clear syntax, intuitive naming and structured constructs. Reliability: minimizing errors and ensuring predictable behavior via strong typing, error handling and memory safety. Efficiency: effective use of resources via low-level control, native compilation and minimal runtime overhead.'],
+['Short: What is Rust’s ownership model?','A compile-time system where each value has a unique owner and a borrow checker enforces safe access. It prevents null dereferences, data races and double-frees without a garbage collector and without runtime overhead, at the cost of a steeper learning curve.'],
+['Short: Contrast FORTRAN and COBOL.','FORTRAN (1957, IBM): scientific/mathematical computing, math notation, numerical efficiency. COBOL (1959, Grace Hopper): business data processing, English-like self-documenting syntax.'],
+['Long: Explain the three main design trade-offs with examples.','Designers cannot maximize every quality, so they prioritize by use case. (1) Readability vs Performance: Python has clear, indentation-based, dynamically typed, interpreted code but slower; C is terse with explicit memory management and native compilation, fast but harder to read. (2) Safety vs Flexibility: Rust’s ownership and borrow checker give compile-time safety but a steep curve; C++ offers immense control and performance but higher risk of memory errors. (3) Simplicity vs Expressiveness: Go has minimal features, easy to learn but verbose; Scala combines OOP and FP for concise, abstract code but is harder to learn. Conclusion: the right balance depends on intended use.'],
+['Long: Describe the Language Design Triangle and place Python, Rust, Go and C on it.','The triangle has vertices Safety (errors prevented at compile time), Simplicity (minimal features, easy to learn) and Performance (execution speed). Rust sits toward Safety (with performance); Go toward Simplicity (with good performance and concurrency); C toward Performance; Python toward Simplicity/readability, sacrificing safety and performance. JavaScript moved toward Performance via JIT while keeping simplicity. No language occupies all three corners, as each makes deliberate trade-offs for its purpose.'],
+['Long: Compare Python, Rust and Go for a critical systems project.','Rust is the best fit: memory safety without GC, compile-time prevention of data races and null dereferences, performance and close-to-hardware control, though with a steep learning curve. Go suits network services and microservices with simple syntax, fast compilation and goroutines, but is less low-level. Python offers the best readability and ecosystem but sacrifices safety and performance, so it is unsuited to critical systems.']
+];
+$('#written').innerHTML='<h2>Written Questions &amp; Model Answers</h2>'+W.map((w,i)=>D(`${i+1}. ${w[0]}`,`<div class="box tip"><b>Model answer:</b> ${w[1]}</div>`)).join('');
+
+$('#rev').innerHTML=`<h2>⚡ Revision Sheet · Night Before</h2>
+<div class="box"><b>History:</b> FORTRAN 1957 IBM (science) · COBOL 1959 Hopper (business) · C, Smalltalk 70s · Java, Python 90s · Rust, Go, Kotlin, Swift 2010s.</div>
+<div class="box"><b>Domains:</b> Web JS/PHP · Data Python/R · Systems C/Rust · Concurrency Go/Erlang.</div>
+<div class="box"><b>5 goals:</b> Readability, Reliability, Efficiency, Portability, Expressiveness.</div>
+<div class="box"><b>Trade-offs:</b> Python↔C (read/perf) · Rust↔C++ (safety/flex) · Go↔Scala (simple/expressive).</div>
+<div class="box"><b>Triangle:</b> Safety=Rust · Simplicity=Go · Performance=C.</div>
+<div class="box"><b>Rust:</b> ownership + borrow checker, no GC, no nulls/races/double-free. <b>Go:</b> Google, goroutines+channels. <b>JS:</b> V8 JIT, TypeScript. <b>Elixir:</b> BEAM, let it crash. <b>Python:</b> “Readability counts” (PEP 20).</div>
+<div class="box warn"><b>Traps:</b> Rust has no GC · FORTRAN≠business · no language wins all three triangle corners.</div>`;
+let t='explain';try{t=localStorage.getItem('pl3tab')||t}catch(e){}
+show(t);
+</script></body></html>
