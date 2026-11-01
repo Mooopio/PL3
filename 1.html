@@ -48,8 +48,21 @@ $('#th').onclick=()=>{const r=document.documentElement;const d=getComputedStyle(
 const D=(t,h,o)=>`<details${o?' open':''}><summary>${t}</summary>${h}</details>`;
 $('#explain').innerHTML='<h2>Deep Explanation</h2>'+
 D('1. Why do programming languages evolve?',`<p>Languages are <mark>tools built for a job</mark>. When hardware improves and <mark>new application domains</mark> appear (web, data, multicore), old tools fit badly, so new ones emerge.</p>
-<ul><li><b>Historical context:</b> early languages were <mark>problem-specific</mark>.</li><li><b>New needs:</b> hardware capabilities advanced; new domains emerged; specific environment requirements.</li></ul>
-<div class="box tip">🧠 Analogy: a hammer, a screwdriver and a saw all exist because one tool can’t do every job well. Languages are the same.</div>
+<ul>
+<li><b>Historical context:</b> early languages were <mark>problem-specific</mark>.</li>
+<li><b>New needs:</b> hardware capabilities advanced; new domains emerged; specific environment requirements.</li>
+</ul>
+
+<h3>Domain-Specific Languages</h3>
+<p>Different programming languages are designed or commonly used for <mark>specific application domains</mark>, because each domain has different requirements.</p>
+<ul>
+<li><b>Web Development:</b> JavaScript, PHP — building interactive websites and web applications.</li>
+<li><b>Systems Programming:</b> C, Rust — building operating systems and low-level software with efficient resource management.</li>
+<li><b>Data Science:</b> Python, R — analyzing data, performing statistical calculations, and building machine learning models.</li>
+<li><b>Concurrency:</b> Go, Erlang — developing programs that handle multiple tasks or processes concurrently.</li>
+</ul>
+
+<div class="box tip">🧠 Analogy: a hammer, a screwdriver and a saw all exist because one tool can’t do every job well. Languages are the same.</div>`)
 <p><i>Slide quote:</i> as hardware advanced and new domains emerged, the need for languages tailored to these requirements became apparent.</p>`,1)+
 D('2. Early problem-specific languages',`<h3>FORTRAN (1957, IBM)</h3><p><b>FORmula TRANslation</b>: first widely used high-level language, for scientific and mathematical computing. Contributions: let programmers use <mark>mathematical notation</mark>; greatly improved efficiency for numerical calculation; cornerstone of high-performance computing.</p>
 <h3>COBOL (1959, Grace Hopper)</h3><p><b>COMmon Business-Oriented Language</b>: for business data processing and reporting. Contributions: <mark>English-like syntax</mark> (accessible), <mark>self-documenting</mark> code, met business-processing needs. First business-oriented language.</p>
