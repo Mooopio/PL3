@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>F# Exam Prep System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f5f6fb;--card:#ffffff;--text:#1b2033;--muted:#5b6479;--accent:#4f46e5;--accent-soft:#eef0ff;
+  --border:#e1e5f0;--good:#15803d;--good-soft:#e7f7ec;--bad:#b91c1c;--bad-soft:#fdecec;
+  --warn:#b45309;--warn-soft:#fff4e0;--info:#0369a1;--info-soft:#e5f4fd;--mark:#fff3a3;
+  --shadow:0 2px 12px rgba(30,40,90,.07);
+}
+:root[data-theme="dark"]{
+  --bg:#0e1220;--card:#171c30;--text:#e8ebf7;--muted:#98a1bd;--accent:#8b93ff;--accent-soft:#222a4d;
+  --border:#2a3150;--good:#4ade80;--good-soft:#12301f;--bad:#f87171;--bad-soft:#3a1717;
+  --warn:#fbbf24;--warn-soft:#3a2d10;--info:#38bdf8;--info-soft:#0f2f40;--mark:#6b5b00;
+  --shadow:0 2px 14px rgba(0,0,0,.35);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font-family:"Cairo","Segoe UI",Tahoma,system-ui,sans-serif;line-height:1.75;font-size:16.5px;transition:background .3s,color .3s}
+header{padding:22px 16px 12px;max-width:1040px;margin:0 auto;display:flex;gap:14px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+header h1{margin:0;font-size:1.55rem;letter-spacing:.2px}
+header p{margin:2px 0 0;color:var(--muted);font-size:.92rem}
+.hbtns{display:flex;gap:8px;flex-wrap:wrap}
+button{font-family:inherit;cursor:pointer}
+.btn{background:var(--card);color:var(--text);border:1px solid var(--border);border-radius:10px;padding:7px 14px;font-size:.9rem;transition:all .2s}
+.btn:hover{border-color:var(--accent);color:var(--accent);transform:translateY(-1px)}
+nav{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--border)}
+nav .inner{max-width:1040px;margin:0 auto;padding:8px 12px;display:flex;gap:6px;overflow-x:auto}
+.tab{white-space:nowrap;background:transparent;border:1px solid transparent;color:var(--muted);padding:8px 16px;border-radius:999px;font-size:.95rem;font-weight:600;transition:all .2s}
+.tab:hover{color:var(--accent)}
+.tab.active{background:var(--accent);color:#fff}
+main{max-width:1040px;margin:0 auto;padding:18px 14px 70px}
+section.panel{display:none;animation:fade .35s ease}
+section.panel.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+h2{font-size:1.35rem;margin:6px 0 14px}
+h3{font-size:1.08rem;margin:18px 0 8px;color:var(--accent)}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:14px}
+details.card{background:var(--card);border:1px solid var(--border);border-radius:14px;margin:12px 0;box-shadow:var(--shadow);overflow:hidden}
+details.card>summary{list-style:none;cursor:pointer;padding:14px 18px;font-weight:700;display:flex;align-items:center;gap:10px;user-select:none}
+details.card>summary::-webkit-details-marker{display:none}
+details.card>summary::after{content:"▸";margin-inline-start:auto;transition:transform .25s;color:var(--muted)}
+details.card[open]>summary::after{transform:rotate(90deg)}
+details.card>summary .num{background:var(--accent);color:#fff;border-radius:8px;min-width:28px;height:28px;display:inline-flex;align-items:center;justify-content:center;font-size:.85rem}
+.body{padding:2px 20px 18px;animation:fade .3s ease}
+p,li{margin:.45em 0}
+ul,ol{padding-inline-start:1.3em}
+code{font-family:"JetBrains Mono",Consolas,monospace;font-size:.88em;background:var(--accent-soft);color:var(--accent);padding:1px 6px;border-radius:6px;direction:ltr;unicode-bidi:embed}
+pre{direction:ltr;text-align:left;background:#0f172a;color:#e2e8f0;border-radius:12px;padding:14px 16px;overflow-x:auto;font-size:.88rem;line-height:1.6;margin:10px 0}
+pre code{background:none;color:inherit;padding:0;font-size:inherit}
+.k{color:#c084fc;font-weight:600}.s{color:#86efac}.c{color:#7c8aa5;font-style:italic}.n{color:#fcd34d}
+mark{background:var(--mark);color:inherit;padding:0 4px;border-radius:4px}
+.box{border-radius:12px;padding:10px 16px;margin:12px 0;border:1px solid var(--border);border-inline-start-width:5px}
+.box b.t{display:block;font-size:.82rem;text-transform:uppercase;letter-spacing:.7px;margin-bottom:2px}
+.def{background:var(--accent-soft);border-color:var(--accent)}
+.analogy{background:var(--info-soft);border-color:var(--info)}.analogy b.t{color:var(--info)}
+.tip{background:var(--good-soft);border-color:var(--good)}.tip b.t{color:var(--good)}
+.trap{background:var(--bad-soft);border-color:var(--bad)}.trap b.t{color:var(--bad)}
+.warn{background:var(--warn-soft);border-color:var(--warn)}.warn b.t{color:var(--warn)}
+.def b.t{color:var(--accent)}
+table{border-collapse:collapse;width:100%;margin:12px 0;font-size:.93rem;background:var(--card);border-radius:10px;overflow:hidden}
+th,td{border:1px solid var(--border);padding:8px 12px;text-align:start;vertical-align:top}
+th{background:var(--accent-soft);color:var(--accent)}
+.tablewrap{overflow-x:auto}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}
+.mini{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px 18px;box-shadow:var(--shadow)}
+.mini h3{margin-top:6px}
+.badge{display:inline-block;font-size:.72rem;font-weight:700;padding:2px 10px;border-radius:999px;margin-inline-end:8px;vertical-align:middle}
+.b-easy{background:var(--good-soft);color:var(--good)}.b-medium{background:var(--warn-soft);color:var(--warn)}.b-hard{background:var(--bad-soft);color:var(--bad)}
+.q{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px 18px;margin:14px 0;box-shadow:var(--shadow);transition:border-color .2s}
+.q .qt{font-weight:700;margin-bottom:8px}
+.opt{display:block;width:100%;text-align:start;background:var(--bg);color:var(--text);border:2px solid var(--border);border-radius:10px;padding:9px 14px;margin:7px 0;font-size:.95rem;transition:all .18s}
+.opt:hover:not([disabled]){border-color:var(--accent);transform:translateX(3px)}
+.opt.correct{border-color:var(--good);background:var(--good-soft)}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.opt[disabled]{cursor:default}
+.expl{display:none;margin-top:10px;animation:fade .3s ease}
+.expl.show{display:block}
+.score{font-weight:700;background:var(--accent-soft);color:var(--accent);padding:6px 14px;border-radius:999px}
+.bar{height:8px;background:var(--border);border-radius:99px;overflow:hidden;flex:1;min-width:120px}
+.bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--accent),#22d3ee);transition:width .4s}
+.ans{display:none;margin-top:10px;animation:fade .3s ease}
+.ans.show{display:block}
+.sheet{background:var(--card);border:2px dashed var(--accent);border-radius:16px;padding:6px 20px 14px;margin:12px 0}
+.chk{display:flex;gap:10px;align-items:flex-start;margin:6px 0}
+.chk input{margin-top:9px;width:18px;height:18px;accent-color:var(--accent)}
+.pill{display:inline-block;background:var(--accent-soft);color:var(--accent);padding:1px 10px;border-radius:999px;font-weight:600;font-size:.85rem;margin:2px}
+footer{text-align:center;color:var(--muted);font-size:.85rem;padding:10px}
+@media(max-width:640px){body{font-size:15.5px}header h1{font-size:1.25rem}.body{padding:2px 14px 14px}}
+@media print{nav,header .hbtns,.toolbar{display:none}section.panel{display:block!important}details.card .body{display:block}}
+</style>
+</head>
+<body>
+<header>
+  <div>
+    <h1>⚡ F# Exam Prep System</h1>
+    <p>Section-2 · T.A. Shereen ElGazzar · Full course material → understanding → exam training</p>
+  </div>
+  <div class="hbtns">
+    <button class="btn" id="themeBtn" type="button">🌙 Dark</button>
+    <button class="btn" id="expandBtn" type="button">Expand all</button>
+    <button class="btn" id="collapseBtn" type="button">Collapse all</button>
+  </div>
+</header>
+
+<nav><div class="inner" id="tabs">
+  <button class="tab active" data-tab="explain" type="button">1 · Explanation</button>
+  <button class="tab" data-tab="summary" type="button">2 · Summary</button>
+  <button class="tab" data-tab="memory" type="button">3 · Memory Lab</button>
+  <button class="tab" data-tab="mcq" type="button">4 · MCQs</button>
+  <button class="tab" data-tab="written" type="button">5 · Written</button>
+  <button class="tab" data-tab="revision" type="button">6 · Revision Sheet</button>
+</div></nav>
+
+<main>
+
+<!-- ======================= EXPLANATION ======================= -->
+<section class="panel active" id="explain">
+<h2>🧠 Phase 1 — Deep Understanding (شرح كامل لكل سلايد)</h2>
+
+<div class="box def"><b class="t">Roadmap</b>
+الـ lecture ماشي بالترتيب ده: <span class="pill">What is F#</span> → <span class="pill">F# vs C#</span> → <span class="pill">Installation</span> → <span class="pill">Variables (let)</span> → <span class="pill">mutable</span> → <span class="pill">Functions</span> → <span class="pill">Scope</span> → <span class="pill">Data Types</span> → <span class="pill">Control Flow</span> → <span class="pill">Pattern Matching</span> → <span class="pill">Recursion</span>
+</div>
+
+<div class="box warn"><b class="t">⚠️ Slide vs Reality — اقرأها قبل الامتحان</b>
+في كام نقطة في السلايدز فيها تبسيط أو اختلاف عن الواقع. <mark>في الامتحان اكتب اللي في السلايدز</mark> (الدكتور/الـ T.A. هو اللي هيصحح)، بس اعرف الحقيقة عشان تفهم:
+<ul>
+<li><b>Origin:</b> السلايد بيقول "University of Oxford". الواقع إن F# اتصمّمت أساسًا في Microsoft Research (Don Syme). اكتب Oxford لو السؤال "according to slides".</li>
+<li><b>"Fully functional":</b> السلايد بيقول fully functional وبيذكر lazy evaluation. الواقع إن F# بتوصف بـ <i>functional-first</i> (بتدعم OOP كمان) والـ evaluation فيها <i>eager</i> by default، والـ lazy موجود بشكل اختياري (<code>lazy</code>, <code>seq</code>).</li>
+<li><b>Command typo:</b> السلايد كاتب <code>dotnet -- version</code>؛ الصح <code>dotnet --version</code> من غير مسافة.</li>
+<li><b>Terminal shortcut:</b> الـ shortcut الصح لفتح terminal في VS Code هو <code>Ctrl + `</code> (backtick) — الرمز اختفى من السلايد.</li>
+<li><b>"Functions are immutable":</b> المقصود إن الـ name المربوط بـ function بـ <code>let</code> مينفعش تعمله reassign بـ <code>&lt;-</code> (زي أي immutable binding).</li>
+</ul></div>
+
+<details class="card" open><summary><span class="num">1</span> What is F#? (Intro)</summary><div class="body">
+<h3>اللي في السلايد</h3>
+<ul>
+<li><mark>Originally developed at the University of Oxford</mark> (حسب السلايد).</li>
+<li>Deeply integrated with <b>functional programming paradigms</b>.</li>
+<li><b>Part of .NET Family:</b> جزء من الـ .NET ecosystem، وده بيدّي <b>smooth interoperability</b> مع لغات .NET التانية زي <b>C#</b> و <b>VB.NET</b>.</li>
+</ul>
+<h3>الشرح خطوة بخطوة</h3>
+<ol>
+<li><b>Functional programming</b> يعني بتبني البرنامج من functions بتاخد input وترجّع output (زي الدوال في الرياضة)، ومش بتعتمد على تغيير variables طول الوقت.</li>
+<li>F# مصممة عشان الأسلوب ده يبقى هو الطبيعي فيها: كل حاجة تقريبًا <b>expression</b> بيرجّع value.</li>
+<li><b>.NET family</b> يعني كل اللغات دي بتتحول لنفس الـ intermediate code وبتشتغل على نفس الـ runtime، فينفع <b>class library مكتوبة بـ C#</b> تتستخدم من F# والعكس.</li>
+</ol>
+<div class="box analogy"><b class="t">Analogy</b>
+.NET زي عيلة كبيرة: مصري وسعودي وشامي كلهم بيتكلموا لهجات مختلفة بس <b>بيفهموا بعض</b> لأن الأساس العربي واحد. C# و F# و VB.NET لهجات، والـ .NET هو الأساس المشترك (interoperability).</div>
+<div class="box tip"><b class="t">Exam tip</b> سؤال تعريف F#: اذكر 3 حاجات — (1) functional language (2) أصلها Oxford حسب السلايد (3) جزء من .NET وبتتعامل مع C# و VB.NET.</div>
+</div></details>
+
+<details class="card"><summary><span class="num">2</span> F# vs C#</summary><div class="body">
+<h3>اللي في السلايد</h3>
+<div class="tablewrap"><table>
+<tr><th>F#</th><th>C#</th></tr>
+<tr><td><b>Fully Functional Language:</b> مصممة أساسًا كـ functional، بتركز على استخدام functions وبتدعم <b>pure functions</b> و <b>lazy evaluation</b> (حسب السلايد).</td>
+<td><b>Multi-Paradigm Language:</b> بتدعم <b>OOP</b> و <b>functional</b> مع بعض، بس <mark>مش بنفس عمق F#</mark>.</td></tr>
+</table></div>
+<h3>نفس الدالة في اللغتين</h3>
+<pre><code class="fs">// F#
+let add x y = x + y
+let result = add 3 5  // 8</code></pre>
+<pre><code class="cs">// C#
+using System;
+
+class Program
+{
+    static void Main()
+    {
+        Func&lt;int, int, int&gt; add = (x, y) =&gt; x + y;
+        int result = add(3, 5);  // 8
+    }
+}</code></pre>
+<h3>الشرح</h3>
+<ul>
+<li>في F# السطرين كفاية: مفيش <code>class</code> ولا <code>Main</code> ولا <code>using</code> ولا <code>return</code> ولا types مكتوبة (<b>type inference</b>).</li>
+<li>في C# محتاج class + Main + <code>Func&lt;int,int,int&gt;</code> (delegate type: 2 int inputs، 1 int output) + lambda <code>(x, y) =&gt; x + y</code>.</li>
+<li>النتيجة واحدة (<b>8</b>) لكن F# أقصر وأقرب للـ math.</li>
+</ul>
+<div class="box analogy"><b class="t">Analogy</b>
+F# زي <b>جرّاح قلب متخصص</b> (functional بس وعميق)، و C# زي <b>دكتور عام شاطر</b> (يعمل OOP و functional بس مش لأخر عمق).</div>
+<div class="box trap"><b class="t">Trap</b> متقولش إن C# مبتدعمش functional. الصح: <b>بتدعمه بس مش بالكامل زي F#</b>.</div>
+</div></details>
+
+<details class="card"><summary><span class="num">3</span> Installation & Setup (5 steps)</summary><div class="body">
+<h3>الخطوات بالترتيب</h3>
+<ol>
+<li><b>Install .NET SDK</b> — حمّله من الـ official .NET website. بعد التثبيت اتأكد من الـ terminal:
+<pre><code class="bash">dotnet --version</code></pre>لو طلع رقم version يبقى تمام.</li>
+<li><b>Install Visual Studio Code</b> — من الـ official VS Code website.</li>
+<li><b>Install the Ionide-F# Extension</b> — ده اللي بيدّي لـ VS Code دعم F# (syntax highlighting, IntelliSense, errors).</li>
+<li><b>Verify the Installation</b> — اعمل ملف جديد بامتداد <code>.fsx</code> (<b>F# Script</b>) واكتب:
+<pre><code class="fs">let add x y = x + y
+printfn "%d" (add 2 3)</code></pre>
+واضغط <code>F5</code> لتشغيل الكود في VS Code (حسب السلايد). المفروض يطبع <b>5</b>.</li>
+<li><b>Create a New F# Project</b> — افتح VS Code Terminal (<code>Ctrl + `</code>) ونفّذ:
+<pre><code class="bash">dotnet new console -lang "F#" -o MyFSharpApp
+cd MyFSharpApp
+dotnet run</code></pre>
+ده بيعمل ويشغّل <b>basic F# console application</b>.</li>
+</ol>
+<h3>تفكيك الأوامر</h3>
+<div class="tablewrap"><table>
+<tr><th>Part</th><th>Meaning</th></tr>
+<tr><td><code>dotnet new console</code></td><td>اعمل مشروع من template اسمه console</td></tr>
+<tr><td><code>-lang "F#"</code></td><td>اللغة F# (من غيرها الافتراضي C#)</td></tr>
+<tr><td><code>-o MyFSharpApp</code></td><td>output folder باسم MyFSharpApp</td></tr>
+<tr><td><code>cd MyFSharpApp</code></td><td>ادخل الفولدر</td></tr>
+<tr><td><code>dotnet run</code></td><td>Build + run</td></tr>
+</table></div>
+<div class="box analogy"><b class="t">Analogy</b>
+عايز تفتح مطبخ: الـ <b>.NET SDK</b> هو الغاز والمعدات (المحرك)، الـ <b>VS Code</b> هو المطبخ نفسه، والـ <b>Ionide</b> هو الشيف المساعد اللي بيصحّحلك وبيقترح عليك.</div>
+<div class="box trap"><b class="t">Trap</b> في <code>printfn "%d" (add 2 3)</code> الأقواس حوالين <code>add 2 3</code> ضرورية؛ من غيرها F# هتفهم إن <code>add</code> نفسها هي الـ argument الأول لـ printfn وهتدّي error.</div>
+</div></details>
+
+<details class="card"><summary><span class="num">4</span> Variables in F# (let & immutability)</summary><div class="body">
+<h3>اللي في السلايد</h3>
+<ul>
+<li>الـ variables بتتعرّف بكلمة <mark>let</mark> (بعكس لغات كتير تانية).</li>
+<li>الـ variables <b>immutable (constant) by default</b>: أول ما تدّيها value <b>متقدرش تغيّرها</b>.</li>
+</ul>
+<pre><code class="fs">let x = 10
+printfn "The value of x is: %d" x</code></pre>
+<h3>الشرح</h3>
+<ol>
+<li><code>let x = 10</code> مش "assignment" بالمعنى المعتاد، دي <b>binding</b>: بتربط الاسم <code>x</code> بالقيمة 10 للأبد.</li>
+<li><code>printfn</code> بتطبع بـ format: <code>%d</code> = integer، وبعدها القيمة <code>x</code>.</li>
+<li>لو كتبت بعدها <code>x &lt;- 20</code> هيطلع compile error لأن x مش mutable.</li>
+</ol>
+<div class="box analogy"><b class="t">Analogy</b>
+الـ <code>let</code> زي <b>رقمك القومي في البطاقة</b>: اتكتب بحبر ومينفعش تمسحه. إنت ممكن تطلّع بطاقة جديدة، بس مش هتعدّل القديمة.</div>
+<div class="box tip"><b class="t">Why immutable?</b> الكود أأمن وأسهل في التتبّع: القيمة اللي شفتها في أول الدالة هي نفسها في آخرها، ومفيش حد يغيّرها من ورا ضهرك.</div>
+</div></details>
+
+<details class="card"><summary><span class="num">5</span> Mutable Variables</summary><div class="body">
+<h3>اللي في السلايد</h3>
+<p>لو محتاج variable قيمتها تتغيّر، استخدم الكلمة <mark>mutable</mark>.</p>
+<pre><code class="fs">let mutable y = 5
+y &lt;- 10  // Reassigning a new value to the mutable variable y</code></pre>
+<h3>Example 1 — Immutable variable + new calculated value</h3>
+<pre><code class="fs">let baseValue = 20
+let newValue = baseValue + 5</code></pre>
+<p><code>baseValue</code> فاضلة 20 زي ما هي، و <code>newValue</code> = <b>25</b> (قيمة جديدة اتحسبت من القديمة بدل ما نعدّل القديمة).</p>
+<h3>Example 2 — Mutable variable in a loop</h3>
+<pre><code class="fs">let mutable counter = 0
+for i in 1..10 do
+    counter &lt;- counter + 1</code></pre>
+<p>بعد اللوب <code>counter = 10</code> (زوّدنا 1 عشر مرات).</p>
+<h3>Example 3 — Mutable variable inside a function</h3>
+<pre><code class="fs">let calculate x =
+    let mutable y = x + 10  // y is mutable
+    y &lt;- y * 2              // changing the value of y
+    y                       // returning the modified y
+
+let result = calculate 5
+printfn "The result is: %d" result</code></pre>
+<p>Trace: <code>x=5</code> → <code>y = 15</code> → <code>y = 30</code> → بيرجّع <b>30</b> → يطبع <b>The result is: 30</b>.</p>
+<div class="box def"><b class="t">Two operators — لا تخلطهم</b>
+<code>=</code> يعمل <b>binding</b> أول مرة (<code>let y = 5</code>) أو <b>comparison</b> جوه expression (<code>if n = 0</code>). <code>&lt;-</code> بيعمل <b>reassignment</b> لـ mutable فقط.</div>
+<div class="box analogy"><b class="t">Analogy</b>
+الـ <code>mutable</code> زي <b>السبورة الوايت بورد</b>: تكتب وتمسح وتكتب تاني. الـ <code>let</code> العادي زي حبر الشهادة.</div>
+<div class="box trap"><b class="t">Trap</b> الـ <code>let</code> وحدها بتعمل <b>constant</b> حتى لو كتبت <code>&lt;-</code> بعدها → error. لازم <code>mutable</code> الأول.</div>
+</div></details>
+
+<details class="card"><summary><span class="num">6</span> Functions (immutability, type annotation, return, purity)</summary><div class="body">
+<h3>أ) Functions are immutable</h3>
+<p>السلايد: once a function is defined, it <mark>cannot be reassigned or modified</mark>.</p>
+<pre><code class="fs">let multiply x = x * 2
+
+// Trying to change the function definition will cause an error
+// multiply &lt;- fun x -&gt; x + x  // This will result in an error
+
+let result = multiply 5
+printfn "The result is: %d" result</code></pre>
+<p>الناتج: <b>10</b>. السطر المعلّق هيعمل error لأن <code>multiply</code> اتعرّفت بـ <code>let</code> مش <code>let mutable</code>.</p>
+
+<h3>ب) Note: Type annotation & type inference</h3>
+<p>لو حددت type فهو بييجي <b>بعد اسم الـ parameter</b> ومفصول عنه بـ colon <code>:</code>. ولو سبته، الـ <b>compiler بيستنتجه (inferred)</b>.</p>
+<pre><code class="fs">let f (x: int) = x + 1</code></pre>
+<p>هنا <code>x</code> بتتفهم <code>int</code> لأن 1 هو <code>int</code> (حتى لو ماكتبناش <code>: int</code>).</p>
+<div class="box analogy"><b class="t">Analogy</b> الـ compiler زي دكتور شاطر: يبصّ على الكارنيه ويعرف إنك طالب هندسة من غير ما تقوله. شاف <code>1</code> جنب <code>x</code> فعرف إن x رقم صحيح.</div>
+
+<h3>ج) Pure function example</h3>
+<pre><code class="fs">let add x y = x + y</code></pre>
+<ul>
+<li><b>Pure function</b>: نفس الـ input يرجّع دايمًا نفس الـ output، ومبتغيّرش حاجة برّه (no side effects).</li>
+<li>F# functions <mark>بترجّع تلقائيًا قيمة آخر expression من غير كلمة return</mark>.</li>
+<li>الـ arguments بتتفصل بمسافات (<code>add 3 5</code>) مش بأقواس وفواصل.</li>
+</ul>
+<div class="box analogy"><b class="t">Analogy</b> الـ pure function زي <b>ماكينة عصير القصب</b>: تدخل قصب (input) يطلع عصير (output) وكل مرة نفس النتيجة، ومبتغيرش حاجة في المحل.</div>
+<div class="box trap"><b class="t">Trap</b> في F# مفيش <code>return</code>. لو كتبتها كـ keyword هتتعامل كـ identifier مش معروف. آخر سطر هو الناتج.</div>
+</div></details>
+
+<details class="card"><summary><span class="num">7</span> Scope in F#</summary><div class="body">
+<pre><code class="fs">let calculate x =
+    let y = x + 10
+    y * 2
+
+let result = calculate 5
+printfn "result is %d " result</code></pre>
+<p><b>Output:</b> <code>result is 30</code> (لأن y = 15 ثم 15 × 2 = 30).</p>
+<h3>لما نحاول نستخدم y برّه الدالة</h3>
+<pre><code class="fs">printfn "The value of y is: %d" y</code></pre>
+<p><b>Output (error):</b></p>
+<pre><code class="bash">F# Compiler for F# 4.0 (Open Source Edition)
+Freely distributed under the Apache 2.0 Open Source License
+/HelloWorld.fs(18,33): error FS0039: The value or constructor 'y' is not defined</code></pre>
+<h3>الشرح</h3>
+<ul>
+<li><code>y</code> متعرّفة <b>جوه</b> الدالة <code>calculate</code> فقط → <b>local scope</b>.</li>
+<li>برّه الدالة الـ compiler مش شايف <code>y</code> → <b>error FS0039: The value or constructor 'y' is not defined</b>.</li>
+<li>الـ indentation (المسافات) هي اللي بتحدد أي سطور تبع الدالة.</li>
+</ul>
+<div class="box analogy"><b class="t">Analogy</b> الدالة زي <b>أوضة نوم مقفولة</b>: اللي جواها (y) محدش يشوفه من الصالة. اللي بيطلع برّه بس هو اللي الدالة <i>ترجّعه</i> (<code>y * 2</code>).</div>
+<div class="box tip"><b class="t">Exam tip</b> الاسم "FS0039" ومعنى الرسالة بيتسألوا كتير: <i>not defined</i> = برّه الـ scope.</div>
+</div></details>
+
+<details class="card"><summary><span class="num">8</span> Data Types in F#</summary><div class="body">
+<div class="tablewrap"><table>
+<tr><th>Type</th><th>Use</th><th>Example (from slides)</th></tr>
+<tr><td><code>int</code></td><td>Integers</td><td><code>let x: int = 10</code></td></tr>
+<tr><td><code>float</code></td><td>Floating-point numbers</td><td><code>let y: float = 10.5</code></td></tr>
+<tr><td><code>string</code></td><td>Text</td><td><code>let greeting: string = "Hello, F#"</code></td></tr>
+<tr><td><code>bool</code></td><td>true or false</td><td><code>let isEven: bool = true</code></td></tr>
+<tr><td><code>list</code></td><td>Lists of values</td><td><code>let numbers: int list = [1; 2; 3; 4; 5]</code></td></tr>
+<tr><td><code>tuple</code></td><td>Group multiple values of <b>different types</b></td><td><code>let person: string * int = ("Alice", 30)</code></td></tr>
+<tr><td><code>unit</code></td><td>Absence of a value</td><td><code>let doNothing (): unit = ()</code></td></tr>
+</table></div>
+<h3>الشرح</h3>
+<ul>
+<li>الـ annotation شكلها <code>let name: type = value</code> (اختياري لأن F# بتستنتج).</li>
+<li><b>List</b>: عناصر من <b>نفس النوع</b>، بتتفصل بـ <b>semicolon</b> <code>;</code> جوه الأقواس المربعة.</li>
+<li><b>Tuple</b>: عناصر من <b>أنواع مختلفة</b>، بتتفصل بـ <b>comma</b>. نوعها بيتكتب <code>string * int</code>.</li>
+<li><b>unit</b>: له قيمة واحدة بس هي <code>()</code>. بتتستخدم لما الدالة بتعمل فعل (زي الطباعة) ومترجّعش نتيجة مفيدة. الدالة <code>doNothing ()</code> مش بتاخد input ولا بترجّع حاجة.</li>
+</ul>
+<div class="box analogy"><b class="t">Analogy</b> الـ <b>list</b> زي كرتونة بيض (كله بيض). الـ <b>tuple</b> زي شنطة مدرسة فيها كتاب وقلم وسندوتش (حاجات مختلفة). الـ <b>unit</b> زي إنك <b>تقفل النور</b>: عملت فعل ومفيش حاجة رجعتلك.</div>
+<div class="box trap"><b class="t">Trap</b> <code>[1, 2, 3]</code> مش list من 3 أرقام! الـ comma بتعمل tuple، فبتطلع list فيها عنصر واحد هو tuple. الصح <code>[1; 2; 3]</code>.</div>
+<div class="box tip"><b class="t">Format specifiers</b> مع printfn: <code>%d</code> int · <code>%f</code> float · <code>%s</code> string · <code>%b</code> bool · <code>%A</code> أي نوع.</div>
+</div></details>
+
+<details class="card"><summary><span class="num">9</span> Control Flow & If-else</summary><div class="body">
+<p>الـ Control flow في F# بيشمل:</p>
+<ul>
+<li><b>Conditional statements</b> زي <code>if-else</code></li>
+<li><b>Loops</b> زي <code>for</code> و <code>while</code></li>
+<li><b>Pattern matching</b> بـ <code>match</code></li>
+<li><b>Recursion</b> للدوال اللي بتنادي نفسها (self-referencing functions)</li>
+</ul>
+<h3>If-else</h3>
+<pre><code class="fs">if x &gt; 0 then
+    printfn "x is positive"
+elif x &lt; 0 then
+    printfn "x is negative"
+else
+    printfn "x is zero"</code></pre>
+<ul>
+<li>الكلمات: <code>if … then</code> / <code>elif … then</code> / <code>else</code>. لاحظ <b>elif</b> مش "else if".</li>
+<li>مفيش أقواس حوالين الشرط ولا curly braces؛ الـ <b>indentation</b> بتحدد الـ block.</li>
+<li>الـ if في F# هي <b>expression</b>: ممكن ترجّع value، وبالتالي كل الفروع لازم تبقى من نفس الـ type.</li>
+</ul>
+<div class="box analogy"><b class="t">Analogy</b> الـ if-else زي <b>الأمن على البوابة</b>: لو معاك كارنيه ادخل، لو معاك تصريح (elif) ادخل من بوابة تانية، غير كده (else) ارجع.</div>
+</div></details>
+
+<details class="card"><summary><span class="num">10</span> Loops (for & while)</summary><div class="body">
+<h3>For loop</h3>
+<pre><code class="fs">for i in 1..5 do
+    printfn "i = %d" i</code></pre>
+<p>بيطبع <code>i = 1</code> لحد <code>i = 5</code> (الـ range <code>1..5</code> <b>inclusive</b>: بيشمل 5). الـ <code>i</code> هنا مش محتاجة mutable لأنها بتتربط بقيمة جديدة في كل لفة.</p>
+<h3>While loop</h3>
+<pre><code class="fs">let mutable i = 0
+while i &lt; 5 do
+    printfn "i = %d" i
+    i &lt;- i + 1</code></pre>
+<p>بيطبع <code>i = 0</code> لحد <code>i = 4</code> (لأن الشرط <code>i &lt; 5</code>). هنا <b>لازم mutable</b> لأننا بنحدّث i بنفسنا بـ <code>i &lt;- i + 1</code>؛ ولو نسيت التحديث هيبقى <b>infinite loop</b>.</p>
+<div class="tablewrap"><table>
+<tr><th></th><th>for</th><th>while</th></tr>
+<tr><td>Use when</td><td>عدد اللفّات معروف (range)</td><td>مستني شرط يبوظ</td></tr>
+<tr><td>Counter</td><td>تلقائي (immutable)</td><td>إنت بتحدّثه، لازم <code>mutable</code></td></tr>
+<tr><td>Sample output</td><td>1 … 5</td><td>0 … 4</td></tr>
+</table></div>
+<div class="box analogy"><b class="t">Analogy</b> <b>for</b> زي إنك تعد 5 طوبات وتحطها. <b>while</b> زي إنك تملا كوباية "لحد ما تتملي" ومش عارف هتاخد كام مرة.</div>
+</div></details>
+
+<details class="card"><summary><span class="num">11</span> Pattern Matching</summary><div class="body">
+<h3>Example 1</h3>
+<pre><code class="fs">let describeNumber x =
+    match x with
+    | 0 -&gt; "Zero"
+    | 1 -&gt; "One"
+    | _ -&gt; "Other"</code></pre>
+<h3>Example 2</h3>
+<pre><code class="fs">let describeDay day =
+    match day with
+    | "Monday" | "Tuesday" | "Wednesday" | "Thursday" | "Friday" -&gt; "Weekday"
+    | "Saturday" | "Sunday" -&gt; "Weekend"
+    | _ -&gt; "Not a valid day"</code></pre>
+<h3>الشرح</h3>
+<ul>
+<li><code>match x with</code> يبدأ المطابقة. كل سطر <code>| pattern -&gt; result</code> هو case.</li>
+<li>الـ cases بتتجرّب <b>من فوق لتحت</b> و <mark>أول واحد يطابق هو اللي بيتنفذ</mark>.</li>
+<li><code>_</code> هو <b>wildcard</b> بيطابق أي حاجة (default / catch-all) ولازم يبقى <b>آخر case</b>.</li>
+<li>الـ <code>|</code> بين patterns جوه نفس case معناها <b>OR</b>: "Monday" أو "Tuesday" … كلهم نفس النتيجة.</li>
+<li>Results: <code>describeNumber 0</code> = "Zero"، <code>describeNumber 7</code> = "Other"، <code>describeDay "Sunday"</code> = "Weekend"، <code>describeDay "Funday"</code> = "Not a valid day".</li>
+</ul>
+<div class="box analogy"><b class="t">Analogy</b> زي <b>ماكينة فرز الجوابات في مكتب البريد</b>: كل جواب بيتفحص ويروح للصندوق المناسب، و <code>_</code> هو صندوق "أخرى" للي ملوش مكان.</div>
+<div class="box trap"><b class="t">Trap</b> لو حطيت <code>_</code> في الأول، هتبلع كل الحالات وباقي الـ cases عمرها ما تتنفذ.</div>
+</div></details>
+
+<details class="card"><summary><span class="num">12</span> Recursion</summary><div class="body">
+<pre><code class="fs">let rec factorial n =
+    if n = 0 then 1
+    else n * factorial (n - 1)</code></pre>
+<h3>الشرح</h3>
+<ul>
+<li><code>rec</code> ضرورية: بتقول للـ compiler إن الدالة هتنادي نفسها.</li>
+<li><b>Base case:</b> <code>n = 0</code> → ترجّع 1 (هو اللي بيوقف الـ recursion).</li>
+<li><b>Recursive case:</b> <code>n * factorial (n - 1)</code>.</li>
+</ul>
+<h3>Trace: factorial 3</h3>
+<pre><code class="fs">factorial 3
+= 3 * factorial 2
+= 3 * (2 * factorial 1)
+= 3 * (2 * (1 * factorial 0))
+= 3 * (2 * (1 * 1))
+= 6</code></pre>
+<div class="box analogy"><b class="t">Analogy</b> الطابور: كل واحد بيسأل اللي قدامه "إنت كام؟" وبيضرب إجابته في رقمه. أول واحد في الطابور (0) بيقول "1" وبيبدأ الجواب يرجع لورا.</div>
+<div class="box trap"><b class="t">Traps</b> (1) نسيان <code>rec</code> → error. (2) نسيان الـ base case → infinite recursion. (3) هنا <code>=</code> معناها مقارنة.</div>
+</div></details>
+
+<details class="card"><summary><span class="num">13</span> Course logistics (من آخر سلايد)</summary><div class="body">
+<ul>
+<li><b>MS Teams Code:</b> <code>xf732zy</code></li>
+<li><b>Drive:</b> فيه لينك SharePoint من الـ T.A. لمواد الـ section (راجع آخر سلايد في الـ PDF).</li>
+</ul>
+<p>مش هتتسأل عنها في الامتحان.</p>
+</div></details>
+</section>
+
+<!-- ======================= SUMMARY ======================= -->
+<section class="panel" id="summary">
+<h2>🧾 Phase 2 — Smart Summary (high-yield فقط)</h2>
+<div class="grid">
+<div class="mini"><h3>1. What is F#</h3><ul>
+<li><b>Functional</b> language (Oxford <i>per slides</i>)</li>
+<li>Part of <b>.NET</b> → interop مع <b>C#</b>, <b>VB.NET</b></li>
+<li>🔔 Trigger: <i>"عيلة .NET"</i></li></ul></div>
+<div class="mini"><h3>2. F# vs C#</h3><ul>
+<li>F# = <b>Fully functional</b> (pure functions, lazy)</li>
+<li>C# = <b>Multi-paradigm</b> (OOP + functional, less fully)</li>
+<li>F# أقصر: <code>let add x y = x + y</code></li></ul></div>
+<div class="mini"><h3>3. Installation</h3><ul>
+<li>.NET SDK → <code>dotnet --version</code></li>
+<li>VS Code</li>
+<li><b>Ionide-F#</b></li>
+<li>Verify: <code>.fsx</code> + <code>F5</code></li>
+<li>Project: <code>dotnet new console -lang "F#" -o MyFSharpApp</code> → <code>cd</code> → <code>dotnet run</code></li></ul></div>
+<div class="mini"><h3>4. Variables</h3><ul>
+<li><code>let</code> = <b>immutable</b> by default</li>
+<li><code>let mutable</code> + <code>&lt;-</code> = changeable</li>
+<li>🔔 حبر vs رصاص</li></ul></div>
+<div class="mini"><h3>5. Functions</h3><ul>
+<li>Function binding is <b>immutable</b></li>
+<li>Type: <code>(x: int)</code>, otherwise <b>inferred</b></li>
+<li><b>Auto-return</b> last expression (no <code>return</code>)</li>
+<li>Pure: same in → same out</li></ul></div>
+<div class="mini"><h3>6. Scope</h3><ul>
+<li>Variables inside a function are <b>local</b></li>
+<li><code>calculate 5</code> → <b>30</b></li>
+<li>Outside → <b>FS0039</b> "not defined"</li></ul></div>
+<div class="mini"><h3>7. Data Types</h3><ul>
+<li><code>int</code> · <code>float</code> · <code>string</code> · <code>bool</code> · <code>list</code> · <code>tuple</code> · <code>unit</code></li>
+<li>list = <code>;</code> / tuple = <code>,</code> / unit = <code>()</code></li></ul></div>
+<div class="mini"><h3>8. Control Flow</h3><ul>
+<li><b>if / elif / else</b></li>
+<li><b>for</b> <code>1..5</code> · <b>while</b> (needs mutable)</li>
+<li><b>match … with</b> (<code>_</code> wildcard)</li>
+<li><b>let rec</b> (base case!)</li></ul></div>
+</div>
+
+<h3>Hierarchical view</h3>
+<ul>
+<li><b>F#</b>
+  <ul><li>Identity: functional-first, .NET family</li>
+  <li>Setup: SDK → VS Code → Ionide → verify → project</li>
+  <li><b>Core language</b>
+    <ul><li>Bindings: <code>let</code> (const) / <code>let mutable</code> + <code>&lt;-</code></li>
+    <li>Functions: immutable, inferred types, auto-return, pure</li>
+    <li>Scope: local to function</li>
+    <li>Types: 7 types</li>
+    <li>Control: if · loops · match · rec</li></ul></li></ul></li>
+</ul>
+
+<h3>Output cheat list (حفظ)</h3>
+<div class="tablewrap"><table>
+<tr><th>Code</th><th>Result</th></tr>
+<tr><td><code>add 3 5</code></td><td>8</td></tr>
+<tr><td><code>add 2 3</code> with printfn</td><td>5</td></tr>
+<tr><td><code>baseValue = 20; newValue</code></td><td>25</td></tr>
+<tr><td>counter loop <code>1..10</code></td><td>10</td></tr>
+<tr><td><code>calculate 5</code> (mutable y or not)</td><td>30</td></tr>
+<tr><td><code>multiply 5</code></td><td>10</td></tr>
+<tr><td><code>factorial 3 / 4</code></td><td>6 / 24</td></tr>
+</table></div>
+</section>
+
+<!-- ======================= MEMORY ======================= -->
+<section class="panel" id="memory">
+<h2>🧩 Phase 3 — Memory Optimization</h2>
+
+<details class="card" open><summary><span class="num">A</span> Spaced repetition plan</summary><div class="body">
+<div class="tablewrap"><table>
+<tr><th>When</th><th>What to do</th><th>Time</th></tr>
+<tr><td>Day 0</td><td>اقرا الـ Explanation مرة + شغّل كل الأمثلة على VS Code</td><td>60 min</td></tr>
+<tr><td>Day 1</td><td>Summary + Memory Lab (من غير ما تبص عالإجابات)</td><td>20 min</td></tr>
+<tr><td>Day 3</td><td>MCQs: حل كلهم، راجع الغلط بس</td><td>25 min</td></tr>
+<tr><td>Day 7</td><td>Written Qs: اكتب إجاباتك بإيدك قبل ما تشوف الـ model answer</td><td>30 min</td></tr>
+<tr><td>Day 14 / Night before</td><td>Revision Sheet + اعد الـ MCQs الغلط</td><td>20 min</td></tr>
+</table></div>
+<div class="box tip"><b class="t">Active recall</b> غطّي الـ output وحاول تتوقعه قبل ما تقراه (زي <code>calculate 5</code> → 30).</div>
+</div></details>
+
+<details class="card" open><summary><span class="num">B</span> Chunking (5 chunks بس)</summary><div class="body">
+<ol>
+<li><b>WHO:</b> F# + .NET + vs C#</li>
+<li><b>SETUP:</b> SDK, VS Code, Ionide, verify, new project</li>
+<li><b>DATA:</b> let, mutable, types</li>
+<li><b>FUNCTIONS:</b> immutable, inferred, auto-return, scope</li>
+<li><b>FLOW:</b> if, loops, match, rec</li>
+</ol>
+</div></details>
+
+<details class="card" open><summary><span class="num">C</span> Mnemonics</summary><div class="body">
+<div class="grid">
+<div class="mini"><h3>7 Data Types</h3><p><b>I F</b>ear <b>S</b>nakes, <b>B</b>ats, <b>L</b>ions, <b>T</b>igers, <b>U</b>gh!</p><p>= <b>I</b>nt, <b>F</b>loat, <b>S</b>tring, <b>B</b>ool, <b>L</b>ist, <b>T</b>uple, <b>U</b>nit</p></div>
+<div class="mini"><h3>4 Control Flow</h3><p><b>I L</b>ike <b>P</b>asta, <b>R</b>ice</p><p>= <b>I</b>f-else, <b>L</b>oops, <b>P</b>attern matching, <b>R</b>ecursion</p></div>
+<div class="mini"><h3>Install steps</h3><p><b>S V I V N</b> = <b>S</b>DK → <b>V</b>S Code → <b>I</b>onide → <b>V</b>erify → <b>N</b>ew project</p></div>
+<div class="mini"><h3>Immutability</h3><p><b>"حبر" = let</b> · <b>"رصاص" = let mutable</b></p></div>
+<div class="mini"><h3>Symbols</h3><p><code>&lt;-</code> "السهم بيرجّع قيمة جديدة" · <code>-&gt;</code> "النتيجة" في match · <code>_</code> "أي حاجة" · <code>()</code> "فاضي"</p></div>
+<div class="mini"><h3>Scope</h3><p>"اللي جوه الأوضة يفضل جوه الأوضة" → <code>y</code> ↛ outside</p></div>
+</div></div></details>
+
+<details class="card" open><summary><span class="num">D</span> Comparison tables</summary><div class="body">
+<h3>let vs let mutable</h3>
+<div class="tablewrap"><table>
+<tr><th></th><th><code>let</code></th><th><code>let mutable</code></th></tr>
+<tr><td>Changeable?</td><td>No</td><td>Yes</td></tr>
+<tr><td>Update syntax</td><td>— (error)</td><td><code>x &lt;- value</code></td></tr>
+<tr><td>Example</td><td><code>let x = 10</code></td><td><code>let mutable y = 5</code></td></tr>
+<tr><td>Typical use</td><td>default</td><td>counters in loops</td></tr>
+</table></div>
+<h3>= vs &lt;- vs -&gt;</h3>
+<div class="tablewrap"><table>
+<tr><th>Symbol</th><th>Role</th><th>Example</th></tr>
+<tr><td><code>=</code></td><td>binding / equality</td><td><code>let x = 1</code> · <code>if n = 0</code></td></tr>
+<tr><td><code>&lt;-</code></td><td>reassign mutable</td><td><code>y &lt;- 10</code></td></tr>
+<tr><td><code>-&gt;</code></td><td>case result (match) / lambda</td><td><code>| 0 -&gt; "Zero"</code></td></tr>
+</table></div>
+<h3>list vs tuple</h3>
+<div class="tablewrap"><table>
+<tr><th></th><th>list</th><th>tuple</th></tr>
+<tr><td>Element types</td><td>same</td><td>can differ</td></tr>
+<tr><td>Separator</td><td><code>;</code></td><td><code>,</code></td></tr>
+<tr><td>Type syntax</td><td><code>int list</code></td><td><code>string * int</code></td></tr>
+<tr><td>Brackets</td><td><code>[ ]</code></td><td><code>( )</code></td></tr>
+</table></div>
+<h3>for vs while</h3>
+<div class="tablewrap"><table>
+<tr><th></th><th>for</th><th>while</th></tr>
+<tr><td>Syntax</td><td><code>for i in 1..5 do</code></td><td><code>while i &lt; 5 do</code></td></tr>
+<tr><td>Mutable needed?</td><td>No</td><td>Yes (counter)</td></tr>
+<tr><td>Ends at</td><td>5 (inclusive)</td><td>4 (<code>i &lt; 5</code>)</td></tr>
+</table></div>
+<h3>if-else vs match</h3>
+<div class="tablewrap"><table>
+<tr><th></th><th>if-else</th><th>match</th></tr>
+<tr><td>Best for</td><td>conditions / ranges (<code>x &gt; 0</code>)</td><td>specific values / many cases</td></tr>
+<tr><td>Default</td><td><code>else</code></td><td><code>_</code></td></tr>
+</table></div>
+</div></details>
+
+<details class="card" open><summary><span class="num">E</span> Common mistakes & traps</summary><div class="body">
+<ol>
+<li>تكتب <code>x &lt;- 20</code> على variable معرّف بـ <code>let</code> بس → error.</li>
+<li>تنسى <code>rec</code> في الدالة المتكررة.</li>
+<li>تستخدم <code>return</code> (مش موجودة).</li>
+<li>تقول إن <code>y</code> ينفع تتطبع برّه <code>calculate</code> (FS0039).</li>
+<li>تفتكر إن <code>[1, 2, 3]</code> list من 3 أرقام (هي tuple جوه list).</li>
+<li>تنسى الأقواس في <code>printfn "%d" (add 2 3)</code>.</li>
+<li>تحط <code>_</code> الأول في match.</li>
+<li>تنسى <code>mutable</code> في while loop فيطلع error (<code>i &lt;- i + 1</code>).</li>
+<li>تفتكر <code>1..5</code> بيوقف عند 4 (هو inclusive).</li>
+<li>تكتب <code>dotnet -- version</code> بمسافة.</li>
+<li>تقول إن C# مش functional خالص (الصح: less fully).</li>
+</ol>
+</div></details>
+</section>
+
+<!-- ======================= MCQ ======================= -->
+<section class="panel" id="mcq">
+<h2>❓ Phase 4 — MCQ Training</h2>
+<div class="toolbar">
+  <span class="score" id="scoreBox">Score: 0 / 0</span>
+  <div class="bar"><i id="progBar"></i></div>
+  <select class="btn" id="levelFilter" aria-label="Filter by level">
+    <option value="all">All levels</option><option value="easy">Easy</option><option value="medium">Medium</option><option value="hard">Hard</option>
+  </select>
+  <button class="btn" id="revealAll" type="button">Reveal all</button>
+  <button class="btn" id="resetMcq" type="button">Reset</button>
+</div>
+<div id="mcqList"></div>
+</section>
+
+<!-- ======================= WRITTEN ======================= -->
+<section class="panel" id="written">
+<h2>✍️ Phase 4 — Written Questions</h2>
+<p>حاول تكتب الإجابة بإيدك الأول، وبعدين اضغط <b>Show model answer</b>.</p>
+<h3>Short answer</h3>
+<div id="shortList"></div>
+<h3>Long-form</h3>
+<div id="longList"></div>
+</section>
+
+<!-- ======================= REVISION ======================= -->
+<section class="panel" id="revision">
+<h2>🎯 Phase 5 — Rapid Revision</h2>
+
+<div class="sheet">
+<h3>📄 1-Page Ultra-Fast Sheet</h3>
+<ul>
+<li><b>F#</b> = functional language, .NET family, interop with C# / VB.NET (Oxford per slides).</li>
+<li><b>F# vs C#</b>: F# fully functional (pure functions, lazy) · C# multi-paradigm (OOP + functional, less fully).</li>
+<li><b>Install</b>: .NET SDK (<code>dotnet --version</code>) → VS Code → Ionide-F# → verify <code>.fsx</code> + F5 → <code>dotnet new console -lang "F#" -o MyFSharpApp</code>, <code>cd</code>, <code>dotnet run</code>.</li>
+<li><b>let</b> = immutable · <b>let mutable</b> + <code>&lt;-</code> = changeable.</li>
+<li><b>Functions</b>: immutable · param type <code>(x: int)</code> else inferred · auto-return last expression · pure = same in/same out.</li>
+<li><b>Scope</b>: inside function only. Outside → <code>error FS0039: The value or constructor 'y' is not defined</code>.</li>
+<li><b>Types</b>: int, float, string, bool, list <code>[1; 2]</code>, tuple <code>("Alice", 30)</code>, unit <code>()</code>.</li>
+<li><b>Control</b>: if / elif / else · for <code>1..5</code> · while (mutable) · match / <code>_</code> · let rec.</li>
+<li><b>printfn</b>: <code>%d</code> int.</li>
+</ul>
+</div>
+
+<div class="sheet">
+<h3>🧮 Key rules / formulas</h3>
+<div class="tablewrap"><table>
+<tr><th>Rule</th><th>Syntax</th></tr>
+<tr><td>Define</td><td><code>let name = value</code></td></tr>
+<tr><td>Mutable define / update</td><td><code>let mutable n = 0</code> / <code>n &lt;- n + 1</code></td></tr>
+<tr><td>Function</td><td><code>let f x y = x + y</code></td></tr>
+<tr><td>Typed param</td><td><code>let f (x: int) = x + 1</code></td></tr>
+<tr><td>Typed value</td><td><code>let y: float = 10.5</code></td></tr>
+<tr><td>Unit function</td><td><code>let doNothing (): unit = ()</code></td></tr>
+<tr><td>If</td><td><code>if c then a elif d then b else e</code></td></tr>
+<tr><td>For</td><td><code>for i in 1..5 do …</code></td></tr>
+<tr><td>While</td><td><code>while cond do …</code></td></tr>
+<tr><td>Match</td><td><code>match x with | p -&gt; r | _ -&gt; d</code></td></tr>
+<tr><td>Recursion</td><td><code>let rec f n = if n = 0 then 1 else n * f (n - 1)</code></td></tr>
+</table></div>
+</div>
+
+<div class="sheet">
+<h3>🌙 Night-before-exam cheat sheet (10 دقايق)</h3>
+<p>اتأكد من كل نقطة:</p>
+<label class="chk"><input type="checkbox"><span>أعرف الفرق بين <code>let</code> و <code>let mutable</code> و استخدام <code>&lt;-</code>.</span></label>
+<label class="chk"><input type="checkbox"><span>أقدر أكتب function وأشرح auto-return من غير <code>return</code>.</span></label>
+<label class="chk"><input type="checkbox"><span>أحفظ output: <code>calculate 5 = 30</code>، <code>newValue = 25</code>، <code>counter = 10</code>، <code>factorial 4 = 24</code>.</span></label>
+<label class="chk"><input type="checkbox"><span>أفسر ليه <code>y</code> مش شغالة برّه (FS0039).</span></label>
+<label class="chk"><input type="checkbox"><span>أعدد الـ 7 data types وأدّي example لكل واحد.</span></label>
+<label class="chk"><input type="checkbox"><span>أكتب match بـ <code>_</code> و OR pattern.</span></label>
+<label class="chk"><input type="checkbox"><span>أكتب factorial بالـ <code>rec</code> وأعمل trace.</span></label>
+<label class="chk"><input type="checkbox"><span>أعدد خطوات التثبيت والأوامر الصح.</span></label>
+<label class="chk"><input type="checkbox"><span>أعرف F# vs C# في جملتين.</span></label>
+<label class="chk"><input type="checkbox"><span>أعرف الـ traps: <code>[1, 2, 3]</code> · <code>-- version</code> · نسيان <code>rec</code> / <code>mutable</code>.</span></label>
+<div class="box warn"><b class="t">آخر نصيحة</b> في الامتحان: اكتب اللي في السلايدز حرفيًا في التعريفات (Oxford / fully functional / multi-paradigm)، وزوّد الكود كـ example دايمًا.</div>
+</div>
+</section>
+
+</main>
+<footer>Built for exam success · Switch sections from the top bar · Print → Revision Sheet</footer>
+
+<script>
+(function(){
+  /* ---------- Theme ---------- */
+  var root=document.documentElement, themeBtn=document.getElementById('themeBtn');
+  function applyTheme(t){root.setAttribute('data-theme',t);themeBtn.textContent=t==='dark'?'☀️ Light':'🌙 Dark';}
+  var saved=null;try{saved=localStorage.getItem('fs-theme');}catch(e){}
+  if(!saved){saved=(window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';}
+  applyTheme(saved);
+  themeBtn.addEventListener('click',function(){
+    var n=root.getAttribute('data-theme')==='dark'?'light':'dark';applyTheme(n);
+    try{localStorage.setItem('fs-theme',n);}catch(e){}
+  });
+
+  /* ---------- Tabs ---------- */
+  var tabs=document.querySelectorAll('.tab'),panels=document.querySelectorAll('.panel');
+  function show(id){
+    tabs.forEach(function(t){t.classList.toggle('active',t.dataset.tab===id);});
+    panels.forEach(function(p){p.classList.toggle('active',p.id===id);});
+    window.scrollTo({top:0,behavior:'smooth'});
+    try{history.replaceState(null,'','#'+id);}catch(e){}
+  }
+  tabs.forEach(function(t){t.addEventListener('click',function(){show(t.dataset.tab);});});
+  var h=(location.hash||'').slice(1);
+  if(h&&document.getElementById(h)&&document.getElementById(h).classList.contains('panel')){show(h);}
+
+  /* ---------- Expand / collapse ---------- */
+  function setAll(open){document.querySelectorAll('.panel.active details.card').forEach(function(d){d.open=open;});}
+  document.getElementById('expandBtn').addEventListener('click',function(){setAll(true);});
+  document.getElementById('collapseBtn').addEventListener('click',function(){setAll(false);});
+
+  /* ---------- MCQ data ---------- */
+  var MCQ=[
+  /* ===== EASY ===== */
+  {l:'easy',q:'Which keyword is used to define a variable in F#?',o:['var','let','dim','define'],a:1,e:'الـ variables في F# بتتعرّف بـ <code>let</code> (بعكس لغات كتير تانية).'},
+  {l:'easy',q:'By default, variables in F# are:',o:['Mutable','Dynamic','Immutable (constant)','Volatile'],a:2,e:'أول ما تدّي قيمة، مينفعش تغيّرها إلا لو استخدمت <code>mutable</code>.'},
+  {l:'easy',q:'Which keyword defines a variable whose value can change?',o:['var','changeable','mutable','volatile'],a:2,e:'<code>let mutable y = 5</code>.'},
+  {l:'easy',q:'Which operator reassigns a new value to a mutable variable?',o:['=',':=','&lt;-','-&gt;'],a:2,e:'<code>y &lt;- 10</code>. الـ <code>=</code> للـ binding أو المقارنة، و <code>-&gt;</code> للـ match.'},
+  {l:'easy',q:'F# is part of which ecosystem?',o:['.NET','JVM','Node.js','LLVM only'],a:0,e:'F# من عيلة .NET وبتتعامل مع C# و VB.NET.'},
+  {l:'easy',q:'Which F# type groups multiple values of <b>different</b> types?',o:['list','tuple','unit','float'],a:1,e:'<code>("Alice", 30)</code> : <code>string * int</code>. الـ list لازم عناصرها من نفس النوع.'},
+  {l:'easy',q:'Which command verifies the .NET SDK installation?',o:['dotnet --version','dotnet verify','fsharp --check','dotnet install'],a:0,e:'بيطبع رقم الـ version. (السلايد فيها مسافة بالغلط).'},
+  {l:'easy',q:'Which VS Code extension adds F# support?',o:['Pylance','Ionide-F#','Prettier','Live Server'],a:1,e:'Ionide-F# هو الـ extension المذكور في السلايد.'},
+  {l:'easy',q:'Which keyword marks a recursive function?',o:['recursive','loop','rec','self'],a:2,e:'<code>let rec factorial n = …</code>'},
+  {l:'easy',q:'What is the extension of an F# script file used in the verification step?',o:['.fsx','.fsc','.fsharp','.cs'],a:0,e:'<code>.fsx</code> = F# Script.'},
+  {l:'easy',q:'Which type indicates the absence of a value?',o:['unit','bool','string','float'],a:0,e:'<code>unit</code> قيمته الوحيدة <code>()</code>.'},
+  {l:'easy',q:'Which symbol is the wildcard in pattern matching?',o:['*','_','?','%'],a:1,e:'<code>| _ -&gt; "Other"</code> بتطابق أي حاجة.'},
+  {l:'easy',q:'How does an F# function return its result?',o:['Must use the return keyword','Automatically returns the last expression','Using out parameters','Using yield only'],a:1,e:'F# functions بترجّع قيمة آخر expression من غير <code>return</code>.'},
+  {l:'easy',q:'Which format specifier prints an integer with printfn?',o:['%s','%f','%d','%b'],a:2,e:'<code>%d</code> int · <code>%f</code> float · <code>%s</code> string · <code>%b</code> bool.'},
+  /* ===== MEDIUM ===== */
+  {l:'medium',q:'What does this print?<pre><code class="fs">let calculate x =\n    let y = x + 10\n    y * 2\nprintfn "%d" (calculate 5)</code></pre>',o:['15','30','20','25'],a:1,e:'y = 5 + 10 = 15 ثم 15 × 2 = <b>30</b>.'},
+  {l:'medium',q:'After defining <code>calculate</code> (with local <code>y</code>), what happens at top level with <code>printfn "The value of y is: %d" y</code>?',o:['Prints 10','Prints 30','Compile error FS0039: y is not defined','Prints 0'],a:2,e:'<code>y</code> local جوه الدالة. error FS0039: The value or constructor \'y\' is not defined.'},
+  {l:'medium',q:'What is the final value of <code>counter</code>?<pre><code class="fs">let mutable counter = 0\nfor i in 1..10 do\n    counter &lt;- counter + 1</code></pre>',o:['0','1','9','10'],a:3,e:'اللوب بتلف 10 مرات (1..10 inclusive) وكل مرة +1.'},
+  {l:'medium',q:'After <code>let baseValue = 20</code> and <code>let newValue = baseValue + 5</code>, the values are:',o:['baseValue = 25, newValue = 25','baseValue = 20, newValue = 25','baseValue = 20, newValue = 20','Compile error'],a:1,e:'الـ immutable بيفضل زي ما هو، والقيمة الجديدة اتحسبت منه.'},
+  {l:'medium',q:'In <code>let f (x: int) = x + 1</code>, what does <code>: int</code> mean?',o:['Return type','Type annotation of parameter x','Cast operator','Default value'],a:1,e:'الـ type بييجي بعد اسم الـ parameter ومفصول بـ colon.'},
+  {l:'medium',q:'In <code>let f x = x + 1</code>, the type of x is:',o:['Inferred as int by the compiler','Must be annotated or it is an error','object','Decided at runtime'],a:0,e:'Type inference: <code>1</code> هو int فالـ x هيتفهم int.'},
+  {l:'medium',q:'How many lines does <code>for i in 1..5 do printfn "i = %d" i</code> print?',o:['4','5','6','Infinite'],a:1,e:'الـ range <code>1..5</code> inclusive: 1, 2, 3, 4, 5.'},
+  {l:'medium',q:'Why does the while-loop example declare <code>let mutable i = 0</code>?',o:['To make the loop faster','Because i is updated each iteration with i &lt;- i + 1','Because while requires mutable keyword','Because printfn needs it'],a:1,e:'مفيش تحديث تلقائي في while؛ إنت اللي بتزوّد i، فلازم mutable.'},
+  {l:'medium',q:'<code>describeDay "Saturday"</code> returns:',o:['Weekday','Weekend','Not a valid day','Compile error'],a:1,e:'Saturday | Sunday → "Weekend".'},
+  {l:'medium',q:'<code>describeDay "Funday"</code> returns:',o:['Weekend','Weekday','Not a valid day','Runtime exception'],a:2,e:'مفيش pattern مطابق، فبيروح للـ wildcard <code>_</code>.'},
+  {l:'medium',q:'<code>describeNumber 7</code> returns:',o:['Zero','One','Other','Error'],a:2,e:'7 مش 0 ولا 1 فبيروح لـ <code>_</code> → "Other".'},
+  {l:'medium',q:'Which statement about F# and C# is correct (per the slides)?',o:['C# is fully functional and F# is multi-paradigm','Both are purely object-oriented','F# is primarily functional; C# is multi-paradigm but not as fully functional','C# does not support functional programming at all'],a:2,e:'F# = fully functional · C# = multi-paradigm (OOP + functional) بس مش بنفس العمق.'},
+  {l:'medium',q:'The type of <code>let person: string * int = ("Alice", 30)</code> is a:',o:['list of strings','tuple of string and int','unit','float'],a:1,e:'الـ <code>*</code> في الـ type بتدل على tuple.'},
+  {l:'medium',q:'Which of these is shown in the slides as a <b>pure function</b>?',o:['let add x y = x + y','let mutable y = 5','printfn "%d" x','for i in 1..5 do'],a:0,e:'نفس الـ input → نفس الـ output ومفيش side effects.'},
+  /* ===== HARD ===== */
+  {l:'hard',q:'Which of the following causes a compile error?',o:['let mutable a = 1, then a &lt;- 2','let a = 1, then a &lt;- 2','let a = 1, then let b = a + 1','let mutable a = 1, then printfn "%d" a'],a:1,e:'<code>a</code> معرّف بـ <code>let</code> بس (immutable) فمينفعش <code>&lt;-</code>.'},
+  {l:'hard',q:'What is <code>factorial 4</code>?<pre><code class="fs">let rec factorial n =\n    if n = 0 then 1\n    else n * factorial (n - 1)</code></pre>',o:['10','24','16','Infinite recursion'],a:1,e:'4 × 3 × 2 × 1 × 1 = <b>24</b>.'},
+  {l:'hard',q:'Why does <code>multiply &lt;- fun x -&gt; x + x</code> fail?',o:['Because fun is invalid','Because multiply was not declared mutable; function bindings made with let are immutable','Because x is unused','Because &lt;- only works inside loops'],a:1,e:'السلايد: once a function is defined it cannot be reassigned or modified.'},
+  {l:'hard',q:'What happens if <code>rec</code> is omitted from factorial?',o:['Works the same','Compile error: factorial is not defined inside its own body','Runs and returns 0','Returns unit'],a:1,e:'من غير <code>rec</code> الاسم مش متاح جوه التعريف نفسه (FS0039).'},
+  {l:'hard',q:'Why does <code>for i in 1..10 do</code> not need <code>let mutable i</code>?',o:['i is rebound to a new immutable value on each iteration','for loops ignore immutability','i is global','i is mutable by default'],a:0,e:'الـ loop variable بتتربط بقيمة جديدة في كل لفة؛ مفيش تعديل لنفس المتغير.'},
+  {l:'hard',q:'Which expression creates an int list with three elements?',o:['[1, 2, 3]','[1; 2; 3]','(1; 2; 3)','{1; 2; 3}'],a:1,e:'الـ comma بتعمل tuple، فـ <code>[1, 2, 3]</code> = list فيها عنصر واحد (tuple).'},
+  {l:'hard',q:'In <code>if n = 0 then 1</code>, the <code>=</code> operator is:',o:['Assignment','Equality comparison','Mutable update','Wildcard'],a:1,e:'جوه الشرط <code>=</code> مقارنة. التحديث بيكون بـ <code>&lt;-</code>.'},
+  {l:'hard',q:'According to the lecture slides, F# was originally developed at:',o:['Google','University of Oxford','Sun Microsystems','Bell Labs'],a:1,e:'ده اللي في السلايد، فاكتبه كده في الامتحان. (في الواقع الأصل Microsoft Research).'},
+  {l:'hard',q:'Which statement about <code>match</code> is TRUE?',o:['The first matching case wins, so the wildcard should be last','The wildcard must be first','All matching cases run','match requires a mutable variable'],a:0,e:'الـ cases بتتجرّب من فوق لتحت، وأول مطابقة بتنفّذ بس.'}
+  ];
+
+  var answered=0,correct=0,mcqList=document.getElementById('mcqList');
+  function hl(root){
+    root.querySelectorAll('code.fs').forEach(function(c){
+      if(c.dataset.done)return;c.dataset.done='1';
+      var t=c.textContent.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+      t=t.replace(/(\/\/.*$)|("(?:[^"\\]|\\.)*")|\b(let|mutable|rec|if|then|elif|else|for|in|do|while|match|with|fun|true|false)\b|\b(\d+(?:\.\d+)?)\b/gm,function(m,cm,st,kw,nm){
+        if(cm)return '<span class="c">'+cm+'</span>';
+        if(st)return '<span class="s">'+st+'</span>';
+        if(kw)return '<span class="k">'+kw+'</span>';
+        return '<span class="n">'+nm+'</span>';
+      });
+      c.innerHTML=t;
+    });
+  }
+  function updateScore(){
+    var total=MCQ.length;
+    document.getElementById('scoreBox').textContent='Score: '+correct+' / '+answered+'  (of '+total+')';
+    document.getElementById('progBar').style.width=Math.round(answered/total*100)+'%';
+  }
+  function lock(card,idx,chosen){
+    var q=MCQ[idx],btns=card.querySelectorAll('.opt');
+    btns.forEach(function(b,i){
+      b.disabled=true;
+      if(i===q.a)b.classList.add('correct');
+      else if(i===chosen)b.classList.add('wrong');
+    });
+    card.querySelector('.expl').classList.add('show');
+    card.dataset.done='1';
+  }
+  function renderMcq(){
+    var f=document.getElementById('levelFilter').value;
+    mcqList.innerHTML='';
+    MCQ.forEach(function(q,idx){
+      if(f!=='all'&&q.l!==f)return;
+      var d=document.createElement('div');d.className='q';d.dataset.idx=idx;
+      var html='<div class="qt"><span class="badge b-'+q.l+'">'+q.l.toUpperCase()+'</span>Q'+(idx+1)+'. '+q.q+'</div>';
+      d.innerHTML=html;
+      q.o.forEach(function(o,i){
+        var b=document.createElement('button');b.type='button';b.className='opt';b.innerHTML=String.fromCharCode(65+i)+'. '+o;
+        b.addEventListener('click',function(){
+          if(d.dataset.done)return;
+          lock(d,idx,i);answered++;if(i===q.a)correct++;updateScore();
+        });
+        d.appendChild(b);
+      });
+      var tg=document.createElement('button');tg.type='button';tg.className='btn';tg.textContent='Toggle explanation';
+      var ex=document.createElement('div');ex.className='expl box tip';ex.innerHTML='<b class="t">Explanation</b>'+q.e;
+      tg.addEventListener('click',function(){ex.classList.toggle('show');});
+      d.appendChild(tg);d.appendChild(ex);
+      mcqList.appendChild(d);
+    });
+    hl(mcqList);
+    mcqList.querySelectorAll('p,li,.qt,.expl').forEach(function(e){e.setAttribute('dir','auto');});
+  }
+  document.getElementById('levelFilter').addEventListener('change',function(){answered=0;correct=0;updateScore();renderMcq();});
+  document.getElementById('resetMcq').addEventListener('click',function(){answered=0;correct=0;updateScore();renderMcq();});
+  document.getElementById('revealAll').addEventListener('click',function(){
+    mcqList.querySelectorAll('.q').forEach(function(c){
+      if(!c.dataset.done){lock(c,+c.dataset.idx,-1);}
+    });
+  });
+  renderMcq();updateScore();
+
+  /* ---------- Written ---------- */
+  var SHORT=[
+  {q:'Define F# and mention its origin and ecosystem.',a:'<ul><li>F# is a <b>functional programming language</b> deeply integrated with functional paradigms.</li><li>Originally developed at the <b>University of Oxford</b> (as stated in the lecture slides).</li><li>It belongs to the <b>.NET family</b>, giving smooth <b>interoperability</b> with C# and VB.NET.</li></ul>'},
+  {q:'Differentiate between F# and C#.',a:'<ul><li><b>F#:</b> fully functional language, emphasizes functions, supports pure functions and lazy evaluation.</li><li><b>C#:</b> multi-paradigm; supports OOP and functional programming but not as fully as F#.</li></ul><pre><code class="fs">let add x y = x + y   // F#</code></pre><pre><code class="cs">Func&lt;int,int,int&gt; add = (x, y) =&gt; x + y;  // C#</code></pre>'},
+  {q:'What does it mean that variables are immutable in F#? Give an example.',a:'<p>Variables defined with <code>let</code> are constants by default: once a value is assigned it <b>cannot be changed</b>.</p><pre><code class="fs">let x = 10\nprintfn "The value of x is: %d" x</code></pre><p>A new value can be calculated from it (<code>let newValue = x + 5</code>) but x itself stays 10.</p>'},
+  {q:'How do you declare and update a mutable variable in F#?',a:'<p>Use <code>let mutable</code> and the <code>&lt;-</code> operator:</p><pre><code class="fs">let mutable y = 5\ny &lt;- 10</code></pre><p>Typical use: counters in loops.</p>'},
+  {q:'Explain why F# functions do not need a return keyword.',a:'<p>An F# function <b>automatically returns the value of its last expression</b>.</p><pre><code class="fs">let add x y = x + y</code></pre><p>The result of <code>x + y</code> is returned.</p>'},
+  {q:'List the F# data types with one example each.',a:'<ul><li><code>int</code>: <code>let x: int = 10</code></li><li><code>float</code>: <code>let y: float = 10.5</code></li><li><code>string</code>: <code>let greeting: string = "Hello, F#"</code></li><li><code>bool</code>: <code>let isEven: bool = true</code></li><li><code>list</code>: <code>let numbers: int list = [1; 2; 3; 4; 5]</code></li><li><code>tuple</code>: <code>let person: string * int = ("Alice", 30)</code></li><li><code>unit</code>: <code>let doNothing (): unit = ()</code></li></ul>'},
+  {q:'What is scope? Why does printing y outside calculate fail?',a:'<p>Scope is the region where a name is visible. <code>y</code> is defined inside <code>calculate</code>, so it is <b>local</b> to it. Using it outside gives <code>error FS0039: The value or constructor \'y\' is not defined</code>.</p>'},
+  {q:'What are the control flow constructs in F#?',a:'<ul><li><b>Conditional statements</b>: if-else (with elif)</li><li><b>Loops</b>: for and while</li><li><b>Pattern matching</b>: match … with</li><li><b>Recursion</b>: self-referencing functions with <code>rec</code></li></ul>'},
+  {q:'What is type inference? Show how to annotate a parameter.',a:'<p>If the type is omitted, the compiler <b>infers</b> it. Example: in <code>let f x = x + 1</code>, x is inferred as <code>int</code> because 1 is an int. To annotate: <code>let f (x: int) = x + 1</code>; the type follows the parameter name, separated by a colon.</p>'}
+  ];
+  var LONG=[
+  {q:'Explain variables in F#: immutable vs mutable, with examples, and when to use each.',a:'<h3>Immutable (default)</h3><ul><li>Defined using <code>let</code>; cannot change after assignment.</li><li>Safer, easier to reason about.</li></ul><pre><code class="fs">let x = 10\nlet baseValue = 20\nlet newValue = baseValue + 5  // 25</code></pre><h3>Mutable</h3><ul><li>Defined using <code>let mutable</code>; updated using <code>&lt;-</code>.</li><li>Used when value must change, e.g., loop counters.</li></ul><pre><code class="fs">let mutable counter = 0\nfor i in 1..10 do\n    counter &lt;- counter + 1   // counter = 10</code></pre><h3>Inside a function</h3><pre><code class="fs">let calculate x =\n    let mutable y = x + 10\n    y &lt;- y * 2\n    y\ncalculate 5  // 30</code></pre><p><b>Conclusion:</b> prefer immutable; use mutable only when required.</p>'},
+  {q:'Compare F# and C# with code examples. Mention paradigms and interoperability.',a:'<ul><li>F#: fully functional, pure functions, lazy evaluation (per slides), originally from Oxford, in the .NET family.</li><li>C#: multi-paradigm (OOP + functional) but not as fully functional.</li><li>Both are .NET languages so they interoperate (also with VB.NET).</li></ul><pre><code class="fs">let add x y = x + y\nlet result = add 3 5  // 8</code></pre><pre><code class="cs">using System;\nclass Program\n{\n    static void Main()\n    {\n        Func&lt;int, int, int&gt; add = (x, y) =&gt; x + y;\n        int result = add(3, 5);  // 8\n    }\n}</code></pre><p>F# needs far less boilerplate and no explicit types (type inference).</p>'},
+  {q:'Describe all control-flow constructs in F# with code.',a:'<h3>If-else</h3><pre><code class="fs">if x &gt; 0 then\n    printfn "x is positive"\nelif x &lt; 0 then\n    printfn "x is negative"\nelse\n    printfn "x is zero"</code></pre><h3>Loops</h3><pre><code class="fs">for i in 1..5 do\n    printfn "i = %d" i\n\nlet mutable i = 0\nwhile i &lt; 5 do\n    printfn "i = %d" i\n    i &lt;- i + 1</code></pre><h3>Pattern matching</h3><pre><code class="fs">let describeNumber x =\n    match x with\n    | 0 -&gt; "Zero"\n    | 1 -&gt; "One"\n    | _ -&gt; "Other"</code></pre><h3>Recursion</h3><pre><code class="fs">let rec factorial n =\n    if n = 0 then 1\n    else n * factorial (n - 1)</code></pre><p>Notes: first matching case wins; <code>_</code> is the wildcard; recursion needs <code>rec</code> and a base case.</p>'},
+  {q:'Explain step by step how to set up an F# environment and create your first project.',a:'<ol><li>Install the <b>.NET SDK</b> from the official site; verify with <code>dotnet --version</code>.</li><li>Install <b>Visual Studio Code</b>.</li><li>Install the <b>Ionide-F#</b> extension.</li><li><b>Verify</b>: create an <code>.fsx</code> script with <code>let add x y = x + y</code> and <code>printfn "%d" (add 2 3)</code>, press F5 (prints 5).</li><li><b>New project</b> in the VS Code terminal:<pre><code class="bash">dotnet new console -lang "F#" -o MyFSharpApp\ncd MyFSharpApp\ndotnet run</code></pre></li></ol>'},
+  {q:'Discuss functions in F#: immutability, type annotation/inference, return behavior, purity and scope.',a:'<ul><li><b>Immutability:</b> a function defined with <code>let</code> cannot be reassigned (<code>multiply &lt;- …</code> is an error).</li><li><b>Types:</b> annotation after parameter name with colon <code>(x: int)</code>; otherwise inferred.</li><li><b>Return:</b> last expression is returned automatically, no <code>return</code>.</li><li><b>Pure function:</b> same input gives same output, no side effects, e.g., <code>let add x y = x + y</code>.</li><li><b>Scope:</b> names inside a function are local; <code>y</code> in <code>calculate</code> is not visible outside (FS0039). <code>calculate 5</code> = 30.</li></ul><pre><code class="fs">let calculate x =\n    let y = x + 10\n    y * 2</code></pre>'}
+  ];
+  function renderQA(listId,arr,prefix){
+    var box=document.getElementById(listId);
+    arr.forEach(function(it,i){
+      var d=document.createElement('div');d.className='q';
+      d.innerHTML='<div class="qt">'+prefix+(i+1)+'. '+it.q+'</div>';
+      var b=document.createElement('button');b.type='button';b.className='btn';b.textContent='Show model answer';
+      var a=document.createElement('div');a.className='ans box def';a.innerHTML='<b class="t">Model answer</b>'+it.a;
+      b.addEventListener('click',function(){var s=a.classList.toggle('show');b.textContent=s?'Hide model answer':'Show model answer';});
+      d.appendChild(b);d.appendChild(a);box.appendChild(d);
+    });
+    hl(box);
+    box.querySelectorAll('p,li,.qt').forEach(function(e){e.setAttribute('dir','auto');});
+  }
+  renderQA('shortList',SHORT,'S');
+  renderQA('longList',LONG,'L');
+
+  /* ---------- Static content: highlight + bidi ---------- */
+  document.querySelectorAll('pre code').forEach(function(c){
+    if(!c.className)c.className='fs';
+  });
+  document.querySelectorAll('pre code.cs, pre code.bash').forEach(function(c){c.dataset.done='1';});
+  hl(document);
+  document.querySelectorAll('main p, main li, main td, main th, .box').forEach(function(e){
+    if(!e.hasAttribute('dir'))e.setAttribute('dir','auto');
+  });
+})();
+</script>
+</body>
+</html>
