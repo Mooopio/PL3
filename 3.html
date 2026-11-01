@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>PL3 · F# Exam Prep</title>
+<style>
+:root{--bg:#f7f8fb;--card:#fff;--tx:#1b2030;--mu:#5b6478;--ac:#4f46e5;--ac2:#e0e7ff;--ok:#16a34a;--bad:#dc2626;--bd:#e2e6ef;--hl:#fff3b0;--code:#0f172a;--cf:#e2e8f0;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e1220;--card:#161b2e;--tx:#e8ebf5;--mu:#98a2bd;--ac:#8b93ff;--ac2:#25295a;--ok:#4ade80;--bad:#f87171;--bd:#262c45;--hl:#5a4b00}}
+:root[data-theme="dark"]{--bg:#0e1220;--card:#161b2e;--tx:#e8ebf5;--mu:#98a2bd;--ac:#8b93ff;--ac2:#25295a;--ok:#4ade80;--bad:#f87171;--bd:#262c45;--hl:#5a4b00}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.65 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--card);border-bottom:1px solid var(--bd);padding:10px 16px;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+h1{font-size:1.05rem;margin:0 auto 0 0}
+nav{display:flex;gap:6px;flex-wrap:wrap}
+button{font:inherit;cursor:pointer;border:1px solid var(--bd);background:var(--card);color:var(--tx);border-radius:10px;padding:6px 12px;transition:.2s}
+button:hover{border-color:var(--ac)}
+button.on{background:var(--ac);color:#fff;border-color:var(--ac)}
+main{max-width:820px;margin:0 auto;padding:20px 16px 60px}
+section{display:none;animation:in .35s ease}section.on{display:block}
+@keyframes in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+details{background:var(--card);border:1px solid var(--bd);border-radius:12px;margin:10px 0;padding:4px 16px}
+summary{cursor:pointer;font-weight:650;padding:10px 0}
+h2{margin:.2em 0 .6em}
+pre{background:var(--code);color:var(--cf);padding:12px;border-radius:10px;overflow-x:auto;font-size:.85rem;line-height:1.5}
+code{font-family:ui-monospace,Menlo,Consolas,monospace}
+p code,li code,td code{background:var(--ac2);padding:1px 5px;border-radius:5px;font-size:.88em}
+mark{background:var(--hl);color:inherit;padding:0 3px;border-radius:3px}
+.tip,.trap,.an{border-left:4px solid;padding:6px 12px;margin:8px 0;border-radius:6px;background:var(--card)}
+.tip{border-color:var(--ac)}.trap{border-color:var(--bad)}.an{border-color:var(--ok)}
+.wrap{overflow-x:auto}table{border-collapse:collapse;width:100%;font-size:.92rem}th,td{border:1px solid var(--bd);padding:6px 10px;text-align:left}th{background:var(--ac2)}
+.q{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:14px 16px;margin:12px 0}
+.q h3{font-size:1rem;margin:0 0 8px}
+.q .lv{font-size:.75rem;color:var(--mu);text-transform:uppercase;letter-spacing:.05em}
+.opt{display:block;width:100%;text-align:left;margin:6px 0}
+.opt.ok{border-color:var(--ok);background:color-mix(in srgb,var(--ok) 18%,transparent)}
+.opt.bad{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 18%,transparent)}
+.ex{display:none;margin-top:8px;color:var(--mu)}.ex.show{display:block}
+.score{position:sticky;top:calc(env(safe-area-inset-top,0px) + 56px);background:var(--ac2);padding:8px 14px;border-radius:10px;margin-bottom:8px;z-index:4}
+</style>
+</head>
+<body>
+<header>
+<h1>⚡ PL3 · Lecture 3 — F# Exam Prep</h1>
+<nav id="nav"></nav>
+<button id="th" aria-label="Toggle theme">🌓</button>
+</header>
+<main>
+
+<section id="explain"><h2>Explanation</h2>
+<p>Tap each topic to expand. <mark>Highlighted</mark> text = exam favourites.</p>
+
+<details open><summary>1 · Functional programming &amp; F#</summary>
+<p>Functional programming builds programs from <mark>functions, immutable values and transformations</mark>. F# is <mark>statically typed, expression-oriented</mark>, in the <mark>ML family</mark>.</p>
+<div class="an">Analogy: a spreadsheet formula — you describe how a result is derived from inputs; you don’t step through commands.</div>
+<pre><code>let square x = x * x
+let message = sprintf "Square is %d" (square 5)
+printfn "%s" message // Square is 25</code></pre></details>
+
+<details><summary>2 · Immutability, mutation, shadowing</summary>
+<p><code>let</code> bindings are <mark>immutable by default</mark>. <code>let mutable</code> allows reassignment using <code>&lt;-</code>. A second <code>let</code> with the same name makes a <mark>new binding (shadowing), not mutation</mark>.</p>
+<pre><code>let x = 10
+let y = x + 5
+let mutable counter = 0
+counter &lt;- counter + 1
+let x = x + 5  // shadowing; valid</code></pre>
+<div class="an">Analogy: shadowing = a new name tag on a new box; mutation = changing what’s inside the same box.</div>
+<div class="trap">Trap: <code>=</code> binds/compares; <code>&lt;-</code> assigns. <code>y</code> stays 15 after shadowing <code>x</code>.</div></details>
+
+<details><summary>3 · Pure functions</summary>
+<p>A <mark>pure function</mark> has no observable side effects and returns the same result for the same inputs. Impure functions depend on or change external state. Pure expressions give <mark>referential transparency</mark> (an expression can be replaced by its value).</p>
+<pre><code>let add a b = a + b // pure
+let mutable total = 0
+let addToTotal x =
+    total &lt;- total + x
+    total // impure</code></pre></details>
+
+<details><summary>4 · Pattern matching &amp; discriminated unions</summary>
+<p><code>match ... with</code> selects by value or structure. Guards use <code>when</code>; <code>_</code> is the wildcard. Works on tuples, lists and unions; the compiler <mark>warns on incomplete cases</mark>.</p>
+<pre><code>let describeValue input =
+    match input with
+    | 0 -> "Zero"
+    | n when n &lt; 0 -> "Negative"
+    | _ -> "Positive"
+type Shape =
+    | Circle of float
+    | Rectangle of float * float
+let area = function
+    | Circle r -> System.Math.PI * r * r
+    | Rectangle (w,h) -> w * h</code></pre>
+<div class="tip">A discriminated union = “one of several named shapes of data”. Each case can carry different data.</div></details>
+
+<details><summary>5 · Recursion &amp; tail recursion</summary>
+<p>A recursive function calls itself and needs a <mark>terminating base case</mark>. <mark>Tail recursion</mark>: the recursive call is in the <em>final position</em>, enabling optimization in suitable circumstances. The accumulator <code>acc</code> carries the running result.</p>
+<pre><code>let rec factorial n =
+    if n = 0 then 1
+    else n * factorial (n - 1)
+let factorialTR n =
+    let rec loop acc n =
+        if n &lt;= 1 then acc
+        else loop (acc * n) (n - 1)
+    loop 1 n</code></pre>
+<div class="trap">In <code>factorial</code>, <code>n * factorial (n-1)</code> is NOT a tail call: a multiplication remains after the call returns.</div></details>
+
+<details><summary>6 · Higher-order functions</summary>
+<p>Functions that <mark>accept or return functions</mark>. <code>List.map</code> transforms, <code>List.filter</code> selects, <code>List.fold</code> accumulates, <code>List.map2</code> combines corresponding elements of <mark>equal-length</mark> lists.</p>
+<pre><code>[1..5] |> List.map (fun x -> x*x)        // [1;4;9;16;25]
+[1..10] |> List.filter (fun x -> x % 2 = 0) // [2;4;6;8;10]
+[1..5] |> List.fold (+) 0                 // 15
+List.map2 (+) [1;2;3] [4;5;6]             // [5;7;9]</code></pre></details>
+
+<details><summary>7 · Composition &amp; pipelines</summary>
+<p><code>&gt;&gt;</code> composes <mark>left to right</mark>; <code>&lt;&lt;</code> right to left. <code>|&gt;</code> feeds a value into a function.</p>
+<pre><code>let double x = x * 2
+let increment x = x + 1
+let f = double >> increment
+f 3 // 7
+[1..10] |> List.filter (fun x -> x % 2 = 0)
+        |> List.map (fun x -> x*x)
+        |> List.sum // 220</code></pre>
+<div class="an">Analogy: an assembly line — each station (function) hands its output to the next.</div></details>
+
+<details><summary>8 · Lazy evaluation &amp; sequences</summary>
+<p>F# is normally <mark>strict</mark>, but <code>lazy</code> values compute only on <code>Force()</code>. Sequences produce elements <mark>on demand</mark>, even infinite streams.</p>
+<pre><code>let lazyValue = lazy (printfn "Computed"; 2 + 2)
+let result = lazyValue.Force()
+let naturals = Seq.initInfinite id
+naturals |> Seq.take 5 |> Seq.toList // [0;1;2;3;4]</code></pre></details>
+
+<details><summary>9 · Declarative &amp; parallel processing</summary>
+<p>Declarative pipelines describe <em>what</em>, avoiding manual mutable loops. <code>Array.Parallel.map</code> processes <mark>independent</mark> elements across available cores.</p>
+<pre><code>open System.IO
+let total =
+    File.ReadAllLines("data.txt")
+    |> Array.map int
+    |> Array.filter (fun x -> x > 50)
+    |> Array.sum
+let squares = [|1..1000|] |> Array.Parallel.map (fun x -> x*x)</code></pre></details>
+
+<details><summary>10 · Computation expressions</summary>
+<p>Structure specialized workflows. The <mark>async builder</mark> supports asynchronous computations; <code>let!</code> binds the result of an async operation. An <mark>option builder needs a library or your own definition</mark>.</p>
+<pre><code>open System.Net.Http
+let fetchData url = async {
+    use client = new HttpClient()
+    let! content = client.GetStringAsync(url)
+                   |> Async.AwaitTask
+    return content.Length
+}</code></pre></details>
+
+<details><summary>11 · Imperative vs functional</summary>
+<p>Imperative: statements + mutable state. Functional: expressions, transformations, recursion, immutable values. <mark>F# supports both styles.</mark></p></details>
+</section>
+
+<section id="summary"><h2>Smart Summary</h2>
+<ul>
+<li><b>F#</b> = static, expression-oriented, ML family</li>
+<li><b>Values</b>: <code>let</code> immutable → <code>let mutable</code> + <code>&lt;-</code> → same name again = <b>shadowing</b></li>
+<li><b>Pure</b> = no side effects + same in → same out → <b>referential transparency</b></li>
+<li><b>Match</b>: <code>when</code> guard, <code>_</code> wildcard, unions, incomplete = warning</li>
+<li><b>Recursion</b>: base case; <b>tail</b> = call in last position (accumulator)</li>
+<li><b>HOFs</b>: map, filter, fold, map2 (equal lengths)</li>
+<li><b>Operators</b>: <code>&gt;&gt;</code> L→R, <code>&lt;&lt;</code> R→L, <code>|&gt;</code> pipe</li>
+<li><b>Lazy</b>: <code>Force()</code>; <b>Seq</b> on demand (infinite OK)</li>
+<li><b>Parallel</b>: <code>Array.Parallel.map</code> for independent items</li>
+<li><b>Async</b>: <code>async { let! ... }</code>; option builder needs a library</li></ul>
+<h2>Memory Optimization</h2>
+<div class="tip"><b>Mnemonic “I-P-M-R-H-C-L-A”</b>: Immutability, Pure, Match, Recursion, Higher-order, Composition, Lazy, Async — the lecture’s order. Review at 1 day, 3 days, 7 days.</div>
+<div class="wrap"><table><tr><th>Concept</th><th>Shadowing</th><th>Mutation</th></tr>
+<tr><td>Syntax</td><td><code>let x = x + 5</code></td><td><code>x &lt;- x + 5</code></td></tr>
+<tr><td>Needs <code>mutable</code>?</td><td>No</td><td>Yes</td></tr>
+<tr><td>Effect</td><td>New binding</td><td>Same value changed</td></tr></table></div>
+<div class="wrap"><table><tr><th></th><th><code>&gt;&gt;</code></th><th><code>&lt;&lt;</code></th><th><code>|&gt;</code></th></tr>
+<tr><td>Does</td><td>Compose L→R</td><td>Compose R→L</td><td>Pass value in</td></tr></table></div>
+<div class="trap"><b>Common traps:</b> confusing shadowing with mutation · thinking <code>n * f(n-1)</code> is tail recursive · reversing <code>&gt;&gt;</code> · assuming <code>List.map2</code> accepts unequal lists · assuming an option builder is built in.</div>
+</section>
+
+<section id="mcq"><h2>MCQs</h2>
+<div class="score" id="score">Score: 0 / 0</div>
+<div id="qs"></div><button id="reset">↻ Reset</button></section>
+
+<section id="written"><h2>Written Questions</h2>
+<details><summary>Short: Explain shadowing vs mutation.</summary><p>Shadowing re-declares a name with <code>let</code>, creating a <b>new binding</b>; the old value is unchanged. Mutation needs <code>let mutable</code> and <code>&lt;-</code>, and changes the <b>same</b> binding. Example: <code>let x = x + 5</code> vs <code>counter &lt;- counter + 1</code>.</p></details>
+<details><summary>Short: What makes a function pure? Give an example.</summary><p>No observable side effects and the same output for the same inputs, so it is referentially transparent. <code>add a b = a + b</code> is pure; <code>addToTotal</code> changes external mutable <code>total</code>, so it is impure.</p></details>
+<details><summary>Short: Why use tail recursion?</summary><p>The recursive call is the last action, so it can be optimized in suitable circumstances. <code>factorialTR</code> uses an accumulator, unlike <code>factorial</code>, which multiplies after the call returns.</p></details>
+<details><summary>Long: Trace <code>[1..10] |&gt; List.filter even |&gt; List.map square |&gt; List.sum</code>.</summary><p>Filter keeps [2;4;6;8;10]. Map squares them: [4;16;36;64;100]. Sum = <b>220</b>. Pipelines read top to bottom, avoid mutable loops, and are declarative.</p></details>
+<details><summary>Long: Compare imperative and functional styles; where do lazy evaluation and async help?</summary><p>Imperative uses statements and mutable state; functional uses expressions, transformations, recursion and immutable values; F# supports both. Lazy evaluation delays work until <code>Force()</code> and sequences can model infinite streams (<code>Seq.initInfinite</code> + <code>Seq.take</code>). Async workflows use <code>let!</code> to bind results of asynchronous operations (e.g. HTTP) without blocking. Declarative pipelines can also use <code>Array.Parallel.map</code> for independent elements.</p></details>
+</section>
+
+<section id="rev"><h2>Revision Sheet · Night Before</h2>
+<div class="tip"><b>Rules:</b> <code>let</code> immutable · <code>mutable</code> + <code>&lt;-</code> · same name = shadow · pure = no side effects · tail call last · <code>&gt;&gt;</code> L→R · <code>&lt;&lt;</code> R→L · <code>|&gt;</code> pipe · map2 equal length · <code>Force()</code> runs lazy · <code>let!</code> in async.</div>
+<pre><code>f = double >> increment ; f 3 = 7
+fold (+) 0 [1..5] = 15
+map2 (+) [1;2;3] [4;5;6] = [5;7;9]
+filter-even/square/sum on [1..10] = 220
+Seq.initInfinite id |> take 5 = [0;1;2;3;4]</code></pre>
+<div class="trap">Check: shadowing ≠ mutation? Tail call position? Operator direction? Option builder needs a library?</div></section>
+</main>
+<script>
+var Q=[
+["easy","Which keyword allows reassignment in F#?",["let mutable","let rec","let lazy","let!"],0,"Bindings are immutable unless declared let mutable."],
+["easy","Which operator assigns to a mutable value?",["=","<-","->","|>"],1,"<- assigns; = binds or compares."],
+["easy","F# is…",["Dynamically typed, imperative-only","Statically typed, expression-oriented, ML family","Untyped scripting","Logic language"],1,"Per the lecture’s definition."],
+["med","A second let x = x + 5 after let x = 10 is…",["Mutation","A compile error","Shadowing (new binding)","Recursion"],2,"Same name, new binding; the old one is not mutated."],
+["med","Which is impure?",["add a b = a + b","square x = x * x","addToTotal x updating a mutable total","double x = x * 2"],2,"It changes external state."],
+["med","Referential transparency means…",["Variables are public","An expression can be replaced by its value without changing behavior","Functions are recursive","Types are inferred"],1,"A property of pure expressions."],
+["easy","In match, _ is…",["A guard","A wildcard","A comment","An operator"],1,"It matches anything."],
+["med","| n when n < 0 uses…",["A guard","A union","A lazy value","A pipe"],0,"when adds a condition."],
+["med","An incomplete match gives…",["A runtime crash always","A compiler warning","Nothing","A syntax error"],1,"The compiler warns about incomplete cases."],
+["med","Tail recursion means the recursive call is…",["First","In final position","Inside a map","Absent"],1,"Enables optimization in suitable circumstances."],
+["hard","Which is NOT tail recursive?",["loop (acc * n) (n - 1)","n * factorial (n - 1)","Both","Neither"],1,"Multiplication happens after the call returns."],
+["med","factorialTR 4 returns…",["10","24","16","4"],1,"4*3*2*1 = 24."],
+["easy","List.fold (+) 0 [1..5] =",["10","15","5","120"],1,"1+2+3+4+5."],
+["med","List.map2 (+) [1;2;3] [4;5;6] =",["[5;7;9]","[1;2;3;4;5;6]","[4;10;18]","15"],0,"Pairwise addition; lists must be equal length."],
+["hard","let f = double >> increment; f 3 =",["8","7","6","9"],1,"double 3 = 6, then +1 = 7 (reverse order gives 8)."],
+["med","<< composes…",["Left to right","Right to left","In parallel","Lazily"],1,">> is left to right."],
+["hard","[1..10] filtered even, squared, summed =",["55","220","385","100"],1,"4+16+36+64+100 = 220."],
+["med","A lazy value is computed when…",["Defined","Force() is called","Compiled","Never"],1,"lazy delays the work."],
+["hard","Why can Seq.initInfinite id |> Seq.take 5 finish?",["It’s strict","Elements generate on demand","Seq is a list","It can’t"],1,"Result: [0;1;2;3;4]."],
+["med","Array.Parallel.map suits…",["Dependent steps","Independent elements","Async I/O only","Pattern matching"],1,"It spreads independent work across cores."],
+["med","let! inside async…",["Mutates a value","Binds the result of an async operation","Declares a union","Forces a lazy"],1,"Used with Async.AwaitTask for tasks."],
+["hard","The option builder…",["Is always built in","Requires a library or definition","Replaces async","Is a pipe"],1,"Per the lecture, it needs an appropriate library or your own definition."]
+];
+var sc=0,an=0;
+function build(){sc=0;an=0;upd();var c=document.getElementById("qs");c.textContent="";
+Q.forEach(function(q,i){var d=document.createElement("div");d.className="q";
+var l=document.createElement("div");l.className="lv";l.textContent="Q"+(i+1)+" · "+q[0];
+var h=document.createElement("h3");h.textContent=q[1];d.appendChild(l);d.appendChild(h);
+var ex=document.createElement("div");ex.className="ex";ex.textContent="Explanation: "+q[4];
+var done=false;
+q[2].forEach(function(t,j){var b=document.createElement("button");b.className="opt";b.textContent=t;
+b.onclick=function(){if(done)return;done=true;an++;
+var bs=d.querySelectorAll(".opt");bs[q[3]].classList.add("ok");
+if(j===q[3])sc++;else b.classList.add("bad");ex.classList.add("show");upd()};d.appendChild(b)});
+d.appendChild(ex);c.appendChild(d)})}
+function upd(){document.getElementById("score").textContent="Score: "+sc+" / "+an+" (of "+Q.length+")"}
+build();document.getElementById("reset").onclick=build;
+var S=[["explain","Explain"],["summary","Summary"],["mcq","MCQs"],["written","Written"],["rev","Revision"]];
+var nav=document.getElementById("nav");
+function show(id){S.forEach(function(s){document.getElementById(s[0]).classList.toggle("on",s[0]===id)});
+nav.querySelectorAll("button").forEach(function(b){b.classList.toggle("on",b.dataset.id===id)});window.scrollTo(0,0)}
+S.forEach(function(s){var b=document.createElement("button");b.textContent=s[1];b.dataset.id=s[0];b.onclick=function(){show(s[0])};nav.appendChild(b)});
+show("explain");
+document.getElementById("th").onclick=function(){var r=document.documentElement;
+var dark=r.dataset.theme?r.dataset.theme==="dark":matchMedia("(prefers-color-scheme: dark)").matches;
+r.dataset.theme=dark?"light":"dark";try{localStorage.setItem("th",r.dataset.theme)}catch(e){}};
+try{var t=localStorage.getItem("th");if(t)document.documentElement.dataset.theme=t}catch(e){}
+</script>
+</body>
+</html>
