@@ -1,0 +1,950 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>F# Exam Prep — Section 3</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f5f6fb;--card:#ffffff;--text:#1b2033;--muted:#5b6479;--accent:#4f46e5;--accent-soft:#eef0ff;
+  --border:#e1e5f0;--good:#15803d;--good-soft:#e7f7ec;--bad:#b91c1c;--bad-soft:#fdecec;
+  --warn:#b45309;--warn-soft:#fff4e0;--info:#0369a1;--info-soft:#e5f4fd;--mark:#fff3a3;
+  --shadow:0 2px 12px rgba(30,40,90,.07);
+}
+:root[data-theme="dark"]{
+  --bg:#0e1220;--card:#171c30;--text:#e8ebf7;--muted:#98a1bd;--accent:#8b93ff;--accent-soft:#222a4d;
+  --border:#2a3150;--good:#4ade80;--good-soft:#12301f;--bad:#f87171;--bad-soft:#3a1717;
+  --warn:#fbbf24;--warn-soft:#3a2d10;--info:#38bdf8;--info-soft:#0f2f40;--mark:#6b5b00;
+  --shadow:0 2px 14px rgba(0,0,0,.35);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font-family:"Cairo","Segoe UI",Tahoma,system-ui,sans-serif;line-height:1.75;font-size:16.5px;transition:background .3s,color .3s}
+header{padding:22px 16px 12px;max-width:1040px;margin:0 auto;display:flex;gap:14px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+header h1{margin:0;font-size:1.55rem;letter-spacing:.2px}
+header p{margin:2px 0 0;color:var(--muted);font-size:.92rem}
+.hbtns{display:flex;gap:8px;flex-wrap:wrap}
+button{font-family:inherit;cursor:pointer}
+.btn{background:var(--card);color:var(--text);border:1px solid var(--border);border-radius:10px;padding:7px 14px;font-size:.9rem;transition:all .2s}
+.btn:hover{border-color:var(--accent);color:var(--accent);transform:translateY(-1px)}
+nav{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--border)}
+nav .inner{max-width:1040px;margin:0 auto;padding:8px 12px;display:flex;gap:6px;overflow-x:auto}
+.tab{white-space:nowrap;background:transparent;border:1px solid transparent;color:var(--muted);padding:8px 16px;border-radius:999px;font-size:.95rem;font-weight:600;transition:all .2s}
+.tab:hover{color:var(--accent)}
+.tab.active{background:var(--accent);color:#fff}
+main{max-width:1040px;margin:0 auto;padding:18px 14px 70px}
+section.panel{display:none;animation:fade .35s ease}
+section.panel.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+h2{font-size:1.35rem;margin:6px 0 14px}
+h3{font-size:1.08rem;margin:18px 0 8px;color:var(--accent)}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:14px}
+details.card{background:var(--card);border:1px solid var(--border);border-radius:14px;margin:12px 0;box-shadow:var(--shadow);overflow:hidden}
+details.card>summary{list-style:none;cursor:pointer;padding:14px 18px;font-weight:700;display:flex;align-items:center;gap:10px;user-select:none}
+details.card>summary::-webkit-details-marker{display:none}
+details.card>summary::after{content:"▸";margin-inline-start:auto;transition:transform .25s;color:var(--muted)}
+details.card[open]>summary::after{transform:rotate(90deg)}
+details.card>summary .num{background:var(--accent);color:#fff;border-radius:8px;min-width:28px;height:28px;display:inline-flex;align-items:center;justify-content:center;font-size:.85rem}
+.body{padding:2px 20px 18px;animation:fade .3s ease}
+p,li{margin:.45em 0}
+ul,ol{padding-inline-start:1.3em}
+code{font-family:"JetBrains Mono",Consolas,monospace;font-size:.88em;background:var(--accent-soft);color:var(--accent);padding:1px 6px;border-radius:6px;direction:ltr;unicode-bidi:embed}
+pre{direction:ltr;text-align:left;background:#0f172a;color:#e2e8f0;border-radius:12px;padding:14px 16px;overflow-x:auto;font-size:.88rem;line-height:1.6;margin:10px 0}
+pre code{background:none;color:inherit;padding:0;font-size:inherit}
+.k{color:#c084fc;font-weight:600}.s{color:#86efac}.c{color:#7c8aa5;font-style:italic}.n{color:#fcd34d}
+mark{background:var(--mark);color:inherit;padding:0 4px;border-radius:4px}
+.box{border-radius:12px;padding:10px 16px;margin:12px 0;border:1px solid var(--border);border-inline-start-width:5px}
+.box b.t{display:block;font-size:.82rem;text-transform:uppercase;letter-spacing:.7px;margin-bottom:2px}
+.def{background:var(--accent-soft);border-color:var(--accent)}
+.analogy{background:var(--info-soft);border-color:var(--info)}.analogy b.t{color:var(--info)}
+.tip{background:var(--good-soft);border-color:var(--good)}.tip b.t{color:var(--good)}
+.trap{background:var(--bad-soft);border-color:var(--bad)}.trap b.t{color:var(--bad)}
+.warn{background:var(--warn-soft);border-color:var(--warn)}.warn b.t{color:var(--warn)}
+.def b.t{color:var(--accent)}
+table{border-collapse:collapse;width:100%;margin:12px 0;font-size:.93rem;background:var(--card);border-radius:10px;overflow:hidden}
+th,td{border:1px solid var(--border);padding:8px 12px;text-align:start;vertical-align:top}
+th{background:var(--accent-soft);color:var(--accent)}
+.tablewrap{overflow-x:auto}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}
+.mini{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px 18px;box-shadow:var(--shadow)}
+.mini h3{margin-top:6px}
+.badge{display:inline-block;font-size:.72rem;font-weight:700;padding:2px 10px;border-radius:999px;margin-inline-end:8px;vertical-align:middle}
+.b-easy{background:var(--good-soft);color:var(--good)}.b-medium{background:var(--warn-soft);color:var(--warn)}.b-hard{background:var(--bad-soft);color:var(--bad)}
+.q{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px 18px;margin:14px 0;box-shadow:var(--shadow);transition:border-color .2s}
+.q .qt{font-weight:700;margin-bottom:8px}
+.opt{display:block;width:100%;text-align:start;background:var(--bg);color:var(--text);border:2px solid var(--border);border-radius:10px;padding:9px 14px;margin:7px 0;font-size:.95rem;transition:all .18s}
+.opt:hover:not([disabled]){border-color:var(--accent);transform:translateX(3px)}
+.opt.correct{border-color:var(--good);background:var(--good-soft)}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.opt[disabled]{cursor:default}
+.expl{display:none;margin-top:10px;animation:fade .3s ease}
+.expl.show{display:block}
+.score{font-weight:700;background:var(--accent-soft);color:var(--accent);padding:6px 14px;border-radius:999px}
+.bar{height:8px;background:var(--border);border-radius:99px;overflow:hidden;flex:1;min-width:120px}
+.bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--accent),#22d3ee);transition:width .4s}
+.ans{display:none;margin-top:10px;animation:fade .3s ease}
+.ans.show{display:block}
+.sheet{background:var(--card);border:2px dashed var(--accent);border-radius:16px;padding:6px 20px 14px;margin:12px 0}
+.chk{display:flex;gap:10px;align-items:flex-start;margin:6px 0}
+.chk input{margin-top:9px;width:18px;height:18px;accent-color:var(--accent)}
+.pill{display:inline-block;background:var(--accent-soft);color:var(--accent);padding:1px 10px;border-radius:999px;font-weight:600;font-size:.85rem;margin:2px}
+footer{text-align:center;color:var(--muted);font-size:.85rem;padding:10px}
+@media(max-width:640px){body{font-size:15.5px}header h1{font-size:1.25rem}.body{padding:2px 14px 14px}}
+@media print{nav,header .hbtns,.toolbar{display:none}section.panel{display:block!important}details.card .body{display:block}}
+</style>
+</head>
+<body>
+<header>
+  <div>
+    <h1>⚡ F# Exam Prep — Section 3</h1>
+    <p>Section-3 · Programming Language 3 · T.A. Shereen El-gazzar · Collections, Records, Unions &amp; Functions</p>
+  </div>
+  <div class="hbtns">
+    <button class="btn" id="themeBtn" type="button">🌙 Dark</button>
+    <button class="btn" id="expandBtn" type="button">Expand all</button>
+    <button class="btn" id="collapseBtn" type="button">Collapse all</button>
+  </div>
+</header>
+
+<nav><div class="inner" id="tabs">
+  <button class="tab active" data-tab="explain" type="button">1 · Explanation</button>
+  <button class="tab" data-tab="summary" type="button">2 · Summary</button>
+  <button class="tab" data-tab="memory" type="button">3 · Memory Lab</button>
+  <button class="tab" data-tab="mcq" type="button">4 · MCQs</button>
+  <button class="tab" data-tab="written" type="button">5 · Written</button>
+  <button class="tab" data-tab="revision" type="button">6 · Revision Sheet</button>
+</div></nav>
+
+<main>
+
+<!-- ======================= EXPLANATION ======================= -->
+<section class="panel active" id="explain">
+<h2>🧠 Phase 1 — Deep Understanding (Section 3: Collections, Records, Unions & Functions)</h2>
+
+<div class="box def"><b class="t">Roadmap</b>
+الـ lecture ده معمول من جزئين: <b>(A) Data Structures</b> ← <span class="pill">Types Overview</span> <span class="pill">Arrays</span> <span class="pill">Lists</span> <span class="pill">Sets</span> <span class="pill">Records</span> <span class="pill">Tuples</span> <span class="pill">Maps</span> <span class="pill">Discriminated Unions</span> — و <b>(B) Functions</b> ← <span class="pill">Inline</span> <span class="pill">Higher-Order</span> <span class="pill">Anonymous (Lambda)</span> <span class="pill">Partial Application & Currying</span>
+</div>
+
+<div class="box warn"><b class="t">⚠️ Slide vs Reality — اقرأها قبل الامتحان</b>
+<mark>في الامتحان اكتب اللي في السلايدز</mark>، بس اعرف الفرق عشان تفهم وتتجنب الغلط في الكود:
+<ul>
+<li><b>Lists "flexible-size":</b> السلايد بيقول Flexible-size similar to a linked list. الواقع إن الـ F# list <b>immutable</b> (مش بتتعدّل)؛ لما "تزوّد" عنصر بتعمل list جديدة. الـ array هو اللي elements بتاعته بتتعدّل بـ <code>&lt;-</code>.</li>
+<li><b>Sets "unordered":</b> السلايد بيقول unordered. الـ F# Set بيحتفظ بالعناصر مترتبة داخليًا (sorted) فلما تطبعه هتلاقيه مترتب. المفهوم في الامتحان: <b>unique elements</b>.</li>
+<li><b>الصيغة <code>set {1; 2; 3; 4}</code>:</b> مكتوبة في السلايد، لكن الصيغة اللي بتشتغل بشكل مضمون هي <code>set [1; 2; 3; 4]</code> (أنا مش متأكد إن الـ braces بتتcompile في كل الإصدارات). اكتب الاتنين لو السؤال "according to the slides"، واستخدم <code>set [ ... ]</code> في الكود اللي هتشغّله.</li>
+<li><b>for loop على Map:</b> السلايد بيستخدم <code>for (key, value) in myMap do</code>. لو الـ compiler اشتكى، الصيغة الشائعة البديلة <code>for KeyValue(key, value) in myMap do</code>. اكتب اللي في السلايد في الامتحان.</li>
+<li><b>Inline:</b> <code>let inline</code> ممكن تخلّي الدالة تشتغل على int و float مع بعض (generic)، وده السبب إن <code>add 3 5</code> و <code>add 10.0 5.0</code> الاتنين شغالين في السلايد.</li>
+<li><b>Output format للـ %A:</b> بيطبع structured representation (للـ records والـ lists بيكون مفصّل ومرتب)، فمتحفظش الشكل الحرفي بالمسافات؛ احفظ المحتوى.</li>
+</ul></div>
+
+<details class="card" open><summary><span class="num">1</span> Data Types Overview & Printing</summary><div class="body">
+<h3>اللي في السلايد</h3>
+<ul>
+<li><b>Basic Types:</b> <code>int</code>, <code>float</code>, <code>String</code>, <code>bool</code>.</li>
+<li><b>Compound Types:</b> <code>List</code>, <code>Array</code>, <code>Tuple</code>, <code>Set</code>, … (وغيرهم).</li>
+<li><b>Printing:</b> استخدم <mark><code>printfn "%A"</code></mark> لطباعة <b>أي type</b>.</li>
+<li><b>Note:</b> <code>printfn</code> أو <code>printf</code> — الـ <b>n</b> في آخر <code>printfn</code> معناها <b>new line</b>.</li>
+</ul>
+<h3>الشرح</h3>
+<ul>
+<li><b>Basic (primitive) types</b> = قيمة واحدة بسيطة. <b>Compound types</b> = بتجمع أكتر من قيمة جوه حاوية واحدة (collections / structures).</li>
+<li>الـ format specifiers اللي عدّت علينا: <code>%d</code> int · <code>%s</code> string · <code>%b</code> bool · <code>%f</code> float · و <code>%A</code> = <b>أي نوع</b> (list, tuple, record, map …).</li>
+</ul>
+<pre><code class="fs">printfn "Hello"      // prints Hello + new line
+printf  "Hello"      // prints Hello, NO new line
+printfn "%A" [1; 2; 3]</code></pre>
+<div class="box analogy"><b class="t">Analogy</b> الـ <code>printf</code> زي إنك تكتب في الورقة من غير ما تنزل سطر. الـ <code>printfn</code> زي ما تضغط <b>Enter</b> بعد الكتابة (n = new line). والـ <code>%A</code> زي <b>"شنطة مفاجآت"</b>: أي حاجة تحطها جواها بتتطبع.</div>
+<div class="box tip"><b class="t">Exam tip</b> "ليه n في آخر printfn؟" → <b>new line</b>. "إزاي أطبع list أو tuple؟" → <code>%A</code>.</div>
+</div></details>
+
+<details class="card"><summary><span class="num">2</span> Arrays & Lists</summary><div class="body">
+<h3>Arrays (اللي في السلايد)</h3>
+<ul>
+<li><b>Definition:</b> Fixed-size collection of elements of the <b>same type</b>.</li>
+</ul>
+<pre><code class="fs">let numbers = [| 1; 2; 3; 4 |]</code></pre>
+<h3>Lists (اللي في السلايد)</h3>
+<ul>
+<li><b>Definition:</b> Flexible-size collection, similar to a <b>linked list</b>.</li>
+</ul>
+<pre><code class="fs">let numbers = [1; 2; 3; 4]</code></pre>
+<h3>الشرح والفرق</h3>
+<div class="tablewrap"><table>
+<tr><th></th><th>Array</th><th>List</th></tr>
+<tr><td>Syntax</td><td><code>[| 1; 2; 3; 4 |]</code> (أقواس + pipe)</td><td><code>[1; 2; 3; 4]</code></td></tr>
+<tr><td>Size (per slide)</td><td><b>Fixed-size</b></td><td><b>Flexible-size</b> (like linked list)</td></tr>
+<tr><td>Element types</td><td>same type</td><td>same type</td></tr>
+<tr><td>Separator</td><td><code>;</code></td><td><code>;</code></td></tr>
+</table></div>
+<div class="box analogy"><b class="t">Analogy</b> الـ <b>Array</b> زي <b>كرتونة بيض ثابتة 12 خانة</b> (عدد الخانات ثابت). الـ <b>List</b> زي <b>سلسلة مفاتيح</b> (linked): بتوصّل واحدة ورا التانية والحلقات مربوطة ببعض.</div>
+<div class="box trap"><b class="t">Trap</b> العناصر بتتفصل بـ <b>semicolon</b> <code>;</code> مش comma. <code>[1, 2, 3]</code> بتعمل list فيها tuple واحد!</div>
+</div></details>
+
+<details class="card"><summary><span class="num">3</span> Sets</summary><div class="body">
+<h3>اللي في السلايد</h3>
+<ul><li><b>Definition:</b> Unordered collection of <mark>unique elements</mark>.</li></ul>
+<pre><code class="fs">let mySet = set [1; 2; 3; 4]
+let mySetDirect = set {1; 2; 3; 4}</code></pre>
+<h3>Accessing Values (add / remove)</h3>
+<pre><code class="fs">let mySet = set [1; 2; 3; 4]
+let updatedSet = mySet.Add(5)
+
+let mySet = set {1; 2; 3; 4}
+let smallerSet = mySet.Remove(3)</code></pre>
+<h3>Contains</h3>
+<pre><code class="fs">let mySet = set [1; 2; 3; 4]
+let hasTwo = mySet.Contains(2)
+let hasSeven = mySet.Contains(7)
+
+printfn "Does the set contain the number 2? %b" hasTwo
+printfn "Does the set contain the number 7? %b" hasSeven</code></pre>
+<p><b>Output:</b></p>
+<pre><code class="bash">Does the set contain the number 2? true
+Does the set contain the number 7? false</code></pre>
+<h3>الشرح</h3>
+<ul>
+<li><b>Unique</b> يعني لو حطيت نفس الرقم مرتين بيتخزن مرة واحدة.</li>
+<li><code>.Add(5)</code> و <code>.Remove(3)</code> <b>بيرجّعوا set جديدة</b> والأصلية تفضل زي ما هي (immutable behavior). عشان كده بنخزّن النتيجة في <code>updatedSet</code> و <code>smallerSet</code>.</li>
+<li><code>.Contains(x)</code> بترجّع <b>bool</b> (true / false) وبتتطبع بـ <code>%b</code>.</li>
+</ul>
+<div class="box analogy"><b class="t">Analogy</b> الـ Set زي <b>قايمة الحضور</b> في المحاضرة: الطالب اسمه بيتسجل <b>مرة واحدة بس</b> حتى لو مضى مرتين. و <code>Contains</code> = "فلان حاضر؟" → true/false.</div>
+<div class="box trap"><b class="t">Trap</b> <code>mySet.Add(5)</code> لوحدها مش بتغيّر <code>mySet</code>! لازم تاخد النتيجة في variable.</div>
+</div></details>
+
+<details class="card"><summary><span class="num">4</span> Records</summary><div class="body">
+<h3>اللي في السلايد</h3>
+<ul>
+<li><b>Description:</b> Record = data structure بيحمل مجموعة <b>named fields</b>، وكل field ممكن يكون من <b>type مختلف</b>.</li>
+<li><b>Advantages:</b> مناسب لتنظيم الـ data المعقدة لأن كل field له اسم واضح، فسهل الفهم والاستخدام.</li>
+</ul>
+<pre><code class="fs">type Person = { Name: string; Age: int; Job: string }
+
+let person = { Name = "Ali"; Age = 25; Job = "Engineer" }
+
+printfn "%A" person</code></pre>
+<h3>تفكيك الكود</h3>
+<ol>
+<li><code>type Person = { … }</code> بتعرّف <b>الشكل (type)</b>. جوه الـ definition بنكتب <code>FieldName: type</code> وبنفصل بـ <code>;</code>.</li>
+<li><code>let person = { Name = "Ali"; … }</code> بتعمل <b>instance</b>. هنا بنكتب <code>FieldName = value</code> (علامة <code>=</code> مش <code>:</code>).</li>
+<li><code>printfn "%A" person</code> بتطبع الـ record بكل fields (Name = "Ali", Age = 25, Job = "Engineer").</li>
+</ol>
+<div class="box analogy"><b class="t">Analogy</b> الـ Record زي <b>استمارة بيانات</b>: خانة "الاسم" وخانة "السن" وخانة "الوظيفة". كل خانة ليها عنوان فواضح فين كل معلومة.</div>
+<div class="box trap"><b class="t">Trap</b> في الـ <b>type definition</b> بنستخدم <code>:</code> (<code>Name: string</code>)، وفي <b>إنشاء القيمة</b> بنستخدم <code>=</code> (<code>Name = "Ali"</code>).</div>
+</div></details>
+
+<details class="card"><summary><span class="num">5</span> Tuples (definition, types, paired data)</summary><div class="body">
+<h3>اللي في السلايد</h3>
+<ul>
+<li>الـ <b>tuple</b> = ordered collection of values، و <mark>عدد العناصر ثابت وقت الإنشاء (fixed when it is created)</mark>.</li>
+<li><b>General syntax:</b></li>
+</ul>
+<pre><code class="fs">let tupleName = (value1, value2, ..., valueN)</code></pre>
+<h3>Types of Tuples</h3>
+<ol>
+<li><b>Simple Tuple:</b> two values of same or different types.
+<pre><code class="fs">let coordinates = (3, 5)
+// Represents an x-y coordinate with x = 3 and y = 5</code></pre></li>
+<li><b>Mixed Types:</b> different types of values.
+<pre><code class="fs">let person = ("Alice", 25, true)
+// Represents a person's name, age, and active status</code></pre></li>
+<li><b>Nested Tuples:</b> tuples جوه tuples.
+<pre><code class="fs">// A nested tuple that contains two tuples
+let nestedTuple = ((1, 2), ("Alice", true))
+
+// Explanation:
+// The outer tuple contains:
+// 1. The first element is another tuple (1, 2)
+// 2. The second element is another tuple ("Alice", true)</code></pre></li>
+</ol>
+<h3>Handling Paired Data</h3>
+<p>لما القيم ليها <b>ترتيب أو ازدواج طبيعي</b> زي الإحداثيات (x, y) أو أجزاء التاريخ (day, month, year) فالـ tuple مناسب.</p>
+<pre><code class="fs">let coordinates = (3, 5)
+// Represents an x-y coordinate with x = 3 and y = 5
+
+let date = (22, 10, 2024)  // (day, month, year)
+let (day, month, year) = date
+printfn "Date: %02d-%02d-%04d" day month year</code></pre>
+<p><b>Output:</b> <code>Date: 22-10-2024</code></p>
+<h3>الشرح</h3>
+<ul>
+<li><code>let (day, month, year) = date</code> اسمها <b>destructuring (unpacking)</b>: بتفك الـ tuple لـ 3 variables مرة واحدة.</li>
+<li><code>%02d</code> = integer على الأقل <b>خانتين</b> ويتملي بأصفار من الشمال (يعني 5 تبقى 05). <code>%04d</code> = أربع خانات (2024).</li>
+<li>الـ tuple عدد عناصره ثابت وعناصره ممكن تبقى <b>أنواع مختلفة</b>.</li>
+</ul>
+<div class="box analogy"><b class="t">Analogy</b> الـ tuple زي <b>تذكرة قطر</b>: (رقم القطر، رقم العربية، رقم الكرسي) — ترتيب ثابت وكل مكان له معنى، بس مفيش أسماء مكتوبة. والـ nested زي <b>شنطة جواها شنطة صغيرة</b>.</div>
+</div></details>
+
+<details class="card"><summary><span class="num">6</span> Accessing Nested Tuples (pattern matching vs fst/snd)</summary><div class="body">
+<pre><code class="fs">let nestedTuple = ((1, 2), ("Alice", true))</code></pre>
+<h3>الطريقة 1: Pattern matching (الأوضح والأشهر)</h3>
+<p>السلايد: <mark>pattern matching is the most common and clear way</mark> للوصول لقيم الـ nested tuple.</p>
+<pre><code class="fs">let ((x, y), (name, isActive)) = nestedTuple
+
+// Now x = 1, y = 2, name = "Alice", isActive = true
+printfn "X: %d, Y: %d" x y
+printfn "Name: %s, Active: %b" name isActive</code></pre>
+<p><b>Output:</b></p>
+<pre><code class="bash">X: 1, Y: 2
+Name: Alice, Active: true</code></pre>
+<h3>الطريقة 2: Manual access بـ fst و snd</h3>
+<pre><code class="fs">let nestedTuple = ((1, 2), ("Alice", true))
+
+let x = fst (fst nestedTuple)
+let name = fst (snd nestedTuple)
+let isTrue = snd (snd nestedTuple)
+
+printfn "X: %d, Name: %s, IsTrue: %b" x name isTrue</code></pre>
+<p><b>Output:</b> <code>X: 1, Name: Alice, IsTrue: true</code></p>
+<div class="box warn"><b class="t">Note من السلايد</b> <code>fst</code> و <code>snd</code> بيشتغلوا <b>بس مع tuples فيها عنصرين (2 elements)</b>.</div>
+<h3>Trace الـ fst / snd</h3>
+<div class="tablewrap"><table>
+<tr><th>Expression</th><th>Step</th><th>Result</th></tr>
+<tr><td><code>fst (fst nestedTuple)</code></td><td>fst nestedTuple = (1, 2) → fst = 1</td><td><b>1</b></td></tr>
+<tr><td><code>fst (snd nestedTuple)</code></td><td>snd nestedTuple = ("Alice", true) → fst = "Alice"</td><td><b>"Alice"</b></td></tr>
+<tr><td><code>snd (snd nestedTuple)</code></td><td>snd nestedTuple = ("Alice", true) → snd = true</td><td><b>true</b></td></tr>
+</table></div>
+<div class="box analogy"><b class="t">Analogy</b> Pattern matching زي <b>إنك تفتح الشنطتين مرة واحدة وتوزع كل حاجة على مكانها</b>. fst/snd زي إنك تفتح شنطة وتدخل إيدك تجيب الصغيرة وبعدين تجيب منها حاجة، خطوة خطوة.</div>
+<div class="box trap"><b class="t">Trap</b> <code>fst</code>/<code>snd</code> على tuple من 3 عناصر (زي <code>("Alice", 25, true)</code>) = compile error.</div>
+</div></details>
+
+<details class="card"><summary><span class="num">7</span> Tuples vs Records</summary><div class="body">
+<h3>Difference (من السلايد)</h3>
+<p>الـ tuple بيجمّع قيم <b>من غير أسماء</b>، لكن الـ Record بيدّي <b>named fields</b>. ده بيخلّي الـ Records أوضح وأسهل قراءة مع structured data لأن كل field ليه label صريح (زي <code>Name</code> و <code>Age</code> في type الـ <code>Person</code>).</p>
+<h3>When to use</h3>
+<div class="tablewrap"><table>
+<tr><th>Use a <b>tuple</b> if…</th><th>Use a <b>record</b> when…</th></tr>
+<tr><td>تجميعة صغيرة وبسيطة مش محتاجة أسماء: coordinates، RGB color values.</td><td>الـ data structure أعقد، أو تسمية الـ fields بتخلّي الكود أوضح: <code>Person</code> فيه <code>Name</code> و <code>Age</code>.</td></tr>
+</table></div>
+<div class="tablewrap"><table>
+<tr><th></th><th>Tuple</th><th>Record</th></tr>
+<tr><td>Names</td><td>No</td><td>Yes (named fields)</td></tr>
+<tr><td>Declaration</td><td>مفيش type definition</td><td><code>type Person = { … }</code></td></tr>
+<tr><td>Example</td><td><code>("Alice", 25, true)</code></td><td><code>{ Name = "Ali"; Age = 25; Job = "Engineer" }</code></td></tr>
+<tr><td>Readability</td><td>أقل مع data كبيرة</td><td>أعلى</td></tr>
+</table></div>
+<div class="box analogy"><b class="t">Analogy</b> الـ tuple زي ورقة فيها أرقام من غير عناوين (٣، ٥). الـ record زي <b>بطاقة</b> مكتوب عليها "x = 3, y = 5" — واضح كل رقم معناه إيه.</div>
+</div></details>
+
+<details class="card"><summary><span class="num">8</span> Maps (Dictionaries)</summary><div class="body">
+<h3>اللي في السلايد</h3>
+<p>الـ Maps (أو dictionaries) = collections of <b>key-value pairs</b>، وكل <b>key unique</b>.</p>
+<pre><code class="fs">let myMap = map [("a", 1); ("b", 2); ("c", 3)]
+
+let myMap = Map.empty.Add("a", 1).Add("b", 2).Add("c", 3)</code></pre>
+<h3>Accessing values & ContainsKey</h3>
+<pre><code class="fs">let value = myMap.["a"]  // Returns 1
+
+let hasKey = myMap.ContainsKey("a")  // Returns true</code></pre>
+<h3>Adding or Removing (بيعمل map جديدة)</h3>
+<pre><code class="fs">let updatedMap = myMap.Add("d", 4)
+
+let smallerMap = myMap.Remove("b")</code></pre>
+<h3>Iterating</h3>
+<pre><code class="fs">for (key, value) in myMap do
+    printfn "Key: %s, Value: %d" key value</code></pre>
+<p><b>Output المتوقع</b> (مترتب بالـ key): <code>Key: a, Value: 1</code> · <code>Key: b, Value: 2</code> · <code>Key: c, Value: 3</code></p>
+<h3>Summary (آخر سلايد في الـ Maps)</h3>
+<ol>
+<li>Map = data structure لتخزين <b>key-value pairs</b>.</li>
+<li>Maps <b>immutable</b>؛ أي تعديل بيطلّع <b>map جديدة</b>.</li>
+<li>بتتخزن بشكل <b>ordered</b> حسب الـ keys.</li>
+<li>بتسمح بـ <b>efficient lookup by key</b> → مفيدة لاسترجاع بيانات سريع.</li>
+</ol>
+<div class="box analogy"><b class="t">Analogy</b> الـ Map زي <b>دليل التليفونات</b>: الاسم (key) فريد، ورقمه (value). بتدوّر بالاسم وتطلع الرقم فورًا. ولو عايز تضيف أو تشيل، بتطبع نسخة جديدة من الدليل.</div>
+<div class="box trap"><b class="t">Trap</b> بتـ access بالـ key مش بالـ index: <code>myMap.["a"]</code>. و <code>Add</code>/<code>Remove</code> لازم تخزّن نتيجتها.</div>
+</div></details>
+
+<details class="card"><summary><span class="num">9</span> Discriminated Unions (الاتحادات المميزة)</summary><div class="body">
+<h3>اللي في السلايد</h3>
+<pre><code class="fs">type ApiResponse =
+    | Success of data: string
+    | Error of message: string
+    | Timeout
+
+let handleApiResponse (response: ApiResponse) =
+    match response with
+    | Success data -&gt; printfn "Request succeeded with data: %s" data
+    | Error message -&gt; printfn "Request failed with error: %s" message
+    | Timeout -&gt; printfn "Request timed out"
+
+let response1 = Success "User data loaded"
+handleApiResponse response1  // Output: Request succeeded with data: User data loaded</code></pre>
+<h3>cont. (باقي الأمثلة)</h3>
+<pre><code class="fs">let response1 = Success "User data loaded"
+let response2 = Error "Network error occurred"
+let response3 = Timeout
+
+handleApiResponse response1
+handleApiResponse response2
+handleApiResponse response3</code></pre>
+<p><b>Output:</b></p>
+<pre><code class="bash">Request succeeded with data: User data loaded
+Request failed with error: Network error occurred
+Request timed out</code></pre>
+<h3>الشرح</h3>
+<ol>
+<li>الـ <b>Discriminated Union (DU)</b> = type قيمته تكون <b>واحدة بس من عدة cases</b> محددة. كل case ممكن يشيل data (<code>Success of data: string</code>) أو لا (<code>Timeout</code>).</li>
+<li>كل case بيبدأ بـ <code>|</code>. الكلمة <code>of</code> بعدها نوع الـ data اللي الـ case بيحملها.</li>
+<li>بنعمل قيمة بكتابة اسم الـ case: <code>Success "User data loaded"</code> أو <code>Timeout</code>.</li>
+<li>بنتعامل مع الـ DU بـ <b>pattern matching</b>: كل case له فرع، والـ data بتتربط بـ variable (<code>Success data -&gt; … data</code>).</li>
+<li>في المثال التاني الـ parameter من غير annotation (<code>response</code>)، والـ compiler استنتج النوع من الـ cases (type inference).</li>
+</ol>
+<div class="box analogy"><b class="t">Analogy</b> الـ DU زي <b>نتيجة الطلب في التوصيل</b>: يا إما "اتسلّم ومعاه الإيصال" (Success + data)، يا إما "فشل ومعاه السبب" (Error + message)، يا إما "اتأخر" (Timeout بدون تفاصيل). مفيش حالة رابعة.</div>
+<div class="box tip"><b class="t">Exam tip</b> لو نسيت case في الـ match الـ compiler بيحذّرك (incomplete pattern matches). ده من أكبر مميزات الـ DU: تضمن إنك غطّيت كل الحالات.</div>
+</div></details>
+
+<details class="card"><summary><span class="num">10</span> Functions — Inline functions</summary><div class="body">
+<h3>اللي في السلايد</h3>
+<p>الـ <code>inline</code> بيسمح للـ compiler <b>يستبدل استدعاء الدالة بجسم الدالة (function body) وقت الـ compile</b>. ده ممكن يحسّن الـ <b>performance</b>، خصوصًا لو الدالة <b>صغيرة</b> ومتنادى عليها <b>كذا مرة</b>، لأنه بيتفادى <b>overhead</b> استدعاء الدالة.</p>
+<pre><code class="fs">let inline add x y = x + y
+
+let result1 = add 3 5
+let result2 = add 10.0 5.0</code></pre>
+<p><b>Results:</b> <code>result1 = 8</code> (int) · <code>result2 = 15.0</code> (float).</p>
+<p><b>Activity:</b> Create inline functions for basic arithmetic operations.</p>
+<pre><code class="fs">let inline sub x y = x - y
+let inline mul x y = x * y
+let inline div x y = x / y</code></pre>
+<div class="box analogy"><b class="t">Analogy</b> بدل ما تكلّم عامل يجيب لك "ملح" كل مرة (استدعاء)، بتحط <b>علبة الملح على الترابيزة</b> (الـ body مكانه مباشرة) فمفيش رحلة رايح جاي.</div>
+<div class="box tip"><b class="t">Bonus</b> الـ <code>inline</code> هنا خلّى <code>add</code> تشتغل على int و float مع بعض، لأن الـ <code>+</code> بيتحل في كل مكان استدعاء حسب النوع.</div>
+</div></details>
+
+<details class="card"><summary><span class="num">11</span> Higher-Order Functions</summary><div class="body">
+<h3>اللي في السلايد</h3>
+<p>Higher-order functions = دوال <b>بتاخد دوال تانية كـ parameters</b> أو <b>بترجّع دوال كنتيجة</b>. ميزة قوية في الـ functional programming بتدّي كود <b>أكثر abstraction وإعادة استخدام (reusable)</b>.</p>
+<p><b>Key Concepts:</b> (1) Passing functions as arguments (2) Returning functions from functions.</p>
+
+<h3>1) Passing Functions as Arguments</h3>
+<p>الدالة <code>applyTwice</code> بتاخد function وقيمة، وتطبّق الـ function على القيمة <b>مرتين</b>.</p>
+<pre><code class="fs">let applyTwice f x = f (f x)
+
+// A simple function to increment a number
+let increment x = x + 1
+
+// Using the higher-order function
+let result = applyTwice increment 5
+printfn "Result of applying increment twice: %d" result  // Output: 7</code></pre>
+<p>Trace: <code>applyTwice increment 5</code> = <code>increment (increment 5)</code> = <code>increment 6</code> = <b>7</b>.</p>
+
+<h3>2) Returning Functions from Functions</h3>
+<pre><code class="fs">let makeMultiplier factor =
+    fun x -&gt; x * factor
+
+// Create a function that doubles its input
+let double = makeMultiplier 2
+
+// Using the returned function
+let result = double 10
+printfn "Result of doubling 10: %d" result  // Output: 20</code></pre>
+<p>Trace: <code>makeMultiplier 2</code> بترجّع <code>fun x -&gt; x * 2</code> → <code>double 10</code> = 10 × 2 = <b>20</b>.</p>
+<div class="box analogy"><b class="t">Analogy</b> <b>applyTwice</b> زي مدير بيقول لموظف: "اعمل المهمة دي مرتين" — المهمة نفسها (الـ function) بتتبعت كـ input. <b>makeMultiplier</b> زي <b>مصنع بيطلّع ماكينات</b>: تدّيه "2" يطلّعلك ماكينة تضاعف، تدّيه "3" يطلّعلك ماكينة بتثلّث.</div>
+<div class="box trap"><b class="t">Trap</b> الـ <code>f (f x)</code> الأقواس مهمة؛ من غيرها هتتفهم غلط.</div>
+</div></details>
+
+<details class="card"><summary><span class="num">12</span> Anonymous Functions & Lambda Expressions</summary><div class="body">
+<h3>اللي في السلايد</h3>
+<p><b>Anonymous functions</b> أو <b>lambda expressions</b> = دوال <b>معرّفة من غير اسم</b>. بتتستخدم للمهام قصيرة المدى وممكن تتعرّف <b>inline</b> في المكان اللي محتاجها فيه، فمناسبة لما تحتاج function مرة واحدة بس.</p>
+<h3>Syntax</h3>
+<pre><code class="fs">fun parameter1 parameter2 -&gt; expression</code></pre>
+<p>بنستخدم الكلمة <code>fun</code> + الـ parameters + <code>-&gt;</code> + الـ expression.</p>
+<h3>Example</h3>
+<pre><code class="fs">// Defining an anonymous function to add two numbers
+let add = fun x y -&gt; x + y
+
+// Using the anonymous function
+let result = add 5 7
+printfn "Result of adding 5 and 7: %d" result  // Output: 12</code></pre>
+<h3>Use Cases in Collections</h3>
+<p>مفيدة جدًا مع <code>List.map</code> و <code>List.filter</code> و <code>List.fold</code> لتنفيذ عمليات على الـ lists.</p>
+<pre><code class="fs">let numbers = [1; 2; 3; 4; 5]
+
+// Using an anonymous function with List.map
+let squares = List.map (fun x -&gt; x * x) numbers
+
+printfn "Squares: %A" squares  // Output: Squares: [1; 4; 9; 16; 25]</code></pre>
+<h3>الشرح</h3>
+<ul>
+<li><code>List.map f list</code> بتطبّق الدالة <code>f</code> على <b>كل عنصر</b> وتطلّع list جديدة بنفس الطول.</li>
+<li>هنا <code>f</code> هي <code>fun x -&gt; x * x</code> (تربيع). النتيجة: 1², 2², 3², 4², 5² = <b>[1; 4; 9; 16; 25]</b>.</li>
+<li>بنطبع بـ <code>%A</code> لأن النتيجة list.</li>
+<li><b>الـ lambda ملهاش اسم</b> (<code>fun x -&gt; x * x</code>)، ولما بنكتب <code>let add = fun x y -&gt; x + y</code> بنديها اسم بإننا نربطها بـ <code>add</code>.</li>
+</ul>
+<div class="box analogy"><b class="t">Analogy</b> الـ lambda زي <b>كوباية بلاستيك لمرة واحدة</b>: تستخدمها في الحفلة وترميها. الدالة المسماة زي كوباية في البيت ليها مكان واسم.</div>
+<div class="box tip"><b class="t">Memory trigger</b> الكلمتين المدوّرتين في السلايد: <b>fun</b> و <b>-&gt;</b>.</div>
+</div></details>
+
+<details class="card"><summary><span class="num">13</span> Partial Application & Currying</summary><div class="body">
+<pre><code class="fs">let add x y = x + y
+let add5 = add 5
+
+let result1 = add5 10  // 15
+let result2 = add5 20  // 25
+
+printfn " %d, %d" result1 result2</code></pre>
+<p><b>Output:</b> <code> 15, 25</code></p>
+<h3>الشرح</h3>
+<ul>
+<li><b>Partial application</b> = تنادي دالة بـ <b>جزء من الـ arguments</b> بس، فترجعلك <b>دالة جديدة</b> مستنية الباقي. <code>add 5</code> لسه محتاجة y، فهي دالة.</li>
+<li><b>Currying</b> = في F# الدالة اللي بتاخد أكتر من argument هي فعليًا سلسلة دوال كل واحدة بتاخد argument واحد. عشان كده <code>add 5</code> ينفع.</li>
+<li><code>add5</code> = دالة "زوّد 5"؛ <code>add5 10</code> = 15 و <code>add5 20</code> = 25.</li>
+</ul>
+<div class="box analogy"><b class="t">Analogy</b> زي ما تقول للمحل "أنا عايز <b>باقة بـ 5 جنيه</b>" وتسيب الباقي: المحل بيعمل لك <b>"عرض ثابت 5"</b>، وكل مرة تيجي تقول الرقم التاني (10 أو 20) وهو يجمعه على الـ 5.</div>
+<div class="box trap"><b class="t">Trap</b> الـ printfn في السلايد مكتوب <code>" %d, %d"</code> وفيه <b>مسافة</b> في الأول، فالـ output بيبدأ بمسافة.</div>
+<div class="box tip"><b class="t">Connection</b> ده مرتبط بـ Higher-order: <code>add 5</code> بترجّع function.</div>
+</div></details>
+
+<details class="card"><summary><span class="num">14</span> Resources (آخر السلايدز)</summary><div class="body">
+<p>السلايد فيها لينكين YouTube playlists ولينك رسمي: <code>https://learn.microsoft.com/en-us/dotnet/fsharp/</code> (Microsoft Learn لـ F#). مش هتتسأل فيهم في الامتحان.</p>
+</div></details>
+</section>
+
+<!-- ======================= SUMMARY ======================= -->
+<section class="panel" id="summary">
+<h2>🧾 Phase 2 — Smart Summary</h2>
+<div class="grid">
+<div class="mini"><h3>Types Overview</h3><ul>
+<li><b>Basic:</b> int, float, String, bool</li>
+<li><b>Compound:</b> List, Array, Tuple, Set, …</li>
+<li>Print any type: <code>printfn "%A"</code></li>
+<li><code>printfn</code> = new line · <code>printf</code> = no new line</li></ul></div>
+<div class="mini"><h3>Array vs List</h3><ul>
+<li>Array: <b>fixed-size</b>, same type <code>[| 1; 2 |]</code></li>
+<li>List: <b>flexible-size</b>, linked list <code>[1; 2]</code></li></ul></div>
+<div class="mini"><h3>Set</h3><ul>
+<li><b>Unique</b> elements, unordered (per slide)</li>
+<li><code>set [1; 2; 3]</code></li>
+<li><code>.Add(5)</code> · <code>.Remove(3)</code> · <code>.Contains(2)</code></li>
+<li>Returns new set / bool</li></ul></div>
+<div class="mini"><h3>Record</h3><ul>
+<li><b>Named fields</b>, types can differ</li>
+<li><code>type Person = { Name: string; Age: int }</code></li>
+<li><code>{ Name = "Ali"; Age = 25 }</code></li></ul></div>
+<div class="mini"><h3>Tuple</h3><ul>
+<li>Ordered, <b>fixed count</b>, no names</li>
+<li>Simple · Mixed · Nested</li>
+<li>Destructure: <code>let (d, m, y) = date</code></li>
+<li><code>fst</code>/<code>snd</code> = 2 elements only</li>
+<li>Pattern matching = best for nested</li></ul></div>
+<div class="mini"><h3>Tuple vs Record</h3><ul>
+<li>Tuple: small, simple (coords, RGB)</li>
+<li>Record: complex, named (Person)</li></ul></div>
+<div class="mini"><h3>Map</h3><ul>
+<li>Key-value, <b>unique keys</b></li>
+<li><code>map [("a",1); …]</code> · <code>myMap.["a"]</code> · <code>ContainsKey</code></li>
+<li><b>Immutable</b>, ordered by key, fast lookup</li>
+<li>Add/Remove → new map</li></ul></div>
+<div class="mini"><h3>Discriminated Union</h3><ul>
+<li>One of several <b>cases</b> (<code>|</code>)</li>
+<li><code>Success of data: string</code></li>
+<li>Used with <b>match</b></li></ul></div>
+<div class="mini"><h3>Inline function</h3><ul>
+<li><code>let inline add x y = x + y</code></li>
+<li>Body replaces call at compile time</li>
+<li>Faster for small, frequently called</li></ul></div>
+<div class="mini"><h3>Higher-order</h3><ul>
+<li>Takes function <b>or</b> returns function</li>
+<li><code>applyTwice increment 5 = 7</code></li>
+<li><code>makeMultiplier 2</code> → <code>double 10 = 20</code></li></ul></div>
+<div class="mini"><h3>Lambda</h3><ul>
+<li>No name: <code>fun x y -&gt; x + y</code></li>
+<li><code>add 5 7 = 12</code></li>
+<li><code>List.map (fun x -&gt; x * x)</code> → <code>[1; 4; 9; 16; 25]</code></li></ul></div>
+<div class="mini"><h3>Partial application / Currying</h3><ul>
+<li><code>add5 = add 5</code></li>
+<li><code>add5 10 = 15</code>, <code>add5 20 = 25</code></li></ul></div>
+</div>
+
+<h3>Output cheat list (حفظ)</h3>
+<div class="tablewrap"><table>
+<tr><th>Code</th><th>Result</th></tr>
+<tr><td><code>mySet.Contains(2)</code> / <code>(7)</code></td><td>true / false</td></tr>
+<tr><td><code>date = (22, 10, 2024)</code> with <code>%02d-%02d-%04d</code></td><td>22-10-2024</td></tr>
+<tr><td>nested pattern match</td><td>X: 1, Y: 2 · Name: Alice, Active: true</td></tr>
+<tr><td>fst/snd on nestedTuple</td><td>X: 1, Name: Alice, IsTrue: true</td></tr>
+<tr><td><code>myMap.["a"]</code> · <code>ContainsKey("a")</code></td><td>1 · true</td></tr>
+<tr><td>handleApiResponse (3 cases)</td><td>succeeded… · failed… · timed out</td></tr>
+<tr><td><code>add 3 5</code> · <code>add 10.0 5.0</code> (inline)</td><td>8 · 15.0</td></tr>
+<tr><td><code>applyTwice increment 5</code></td><td>7</td></tr>
+<tr><td><code>double 10</code></td><td>20</td></tr>
+<tr><td><code>add 5 7</code> (lambda)</td><td>12</td></tr>
+<tr><td><code>List.map (fun x -&gt; x * x) [1..5]</code></td><td>[1; 4; 9; 16; 25]</td></tr>
+<tr><td><code>add5 10</code> · <code>add5 20</code></td><td>15 · 25</td></tr>
+</table></div>
+</section>
+
+<!-- ======================= MEMORY ======================= -->
+<section class="panel" id="memory">
+<h2>🧩 Phase 3 — Memory Optimization</h2>
+
+<details class="card" open><summary><span class="num">A</span> Spaced repetition plan</summary><div class="body">
+<div class="tablewrap"><table>
+<tr><th>When</th><th>What to do</th><th>Time</th></tr>
+<tr><td>Day 0</td><td>اقرا الـ Explanation وشغّل كل مثال في VS Code</td><td>60 min</td></tr>
+<tr><td>Day 1</td><td>Summary + جداول المقارنة (من غير ما تبص على الإجابات)</td><td>20 min</td></tr>
+<tr><td>Day 3</td><td>MCQs كلها، راجع الغلط بس</td><td>25 min</td></tr>
+<tr><td>Day 7</td><td>Written: اكتب إجاباتك بإيدك قبل الـ model answer</td><td>30 min</td></tr>
+<tr><td>Night before</td><td>Revision Sheet + اعد MCQs الغلط</td><td>20 min</td></tr>
+</table></div>
+<div class="box tip"><b class="t">Active recall</b> غطّي الـ output واتوقعه قبل ما تقراه (مثلاً <code>applyTwice increment 5</code> → 7).</div>
+</div></details>
+
+<details class="card" open><summary><span class="num">B</span> Chunking (4 chunks)</summary><div class="body">
+<ol>
+<li><b>PRINT & BASICS:</b> basic vs compound types, <code>%A</code>, printf/printfn</li>
+<li><b>SEQUENCES:</b> Array, List, Set, Map</li>
+<li><b>STRUCTURES:</b> Tuple, Record, Discriminated Union</li>
+<li><b>FUNCTIONS:</b> Inline, Higher-order, Lambda, Partial application</li>
+</ol>
+</div></details>
+
+<details class="card" open><summary><span class="num">C</span> Mnemonics</summary><div class="body">
+<div class="grid">
+<div class="mini"><h3>Compound types</h3><p><b>L</b>azy <b>A</b>li <b>S</b>ips <b>T</b>ea, <b>M</b>akes <b>R</b>ice, <b>D</b>rinks <b>U</b>nsweetened</p><p>= <b>L</b>ist, <b>A</b>rray, <b>S</b>et, <b>T</b>uple, <b>M</b>ap, <b>R</b>ecord, <b>D</b>iscriminated <b>U</b>nion</p></div>
+<div class="mini"><h3>Function topics</h3><p><b>I H</b>ate <b>A</b>nnoying <b>P</b>op-quizzes</p><p>= <b>I</b>nline, <b>H</b>igher-order, <b>A</b>nonymous, <b>P</b>artial application</p></div>
+<div class="mini"><h3>Brackets</h3><p><code>[| |]</code> array (فيه pipe) · <code>[ ]</code> list · <code>( )</code> tuple · <code>{ }</code> record · <code>set [ ]</code> · <code>map [ ]</code></p></div>
+<div class="mini"><h3>Unique</h3><p><b>Set</b> = unique elements · <b>Map</b> = unique keys</p></div>
+<div class="mini"><h3>Immutable results</h3><p>Add / Remove على Set و Map = <b>نسخة جديدة</b> ("خد نسخة جديدة وخزّنها")</p></div>
+<div class="mini"><h3>HOF</h3><p><b>"ياخد أو يرجّع"</b> function (take or return)</p></div>
+</div></div></details>
+
+<details class="card" open><summary><span class="num">D</span> Comparison tables</summary><div class="body">
+<h3>Collections at a glance</h3>
+<div class="tablewrap"><table>
+<tr><th></th><th>Array</th><th>List</th><th>Set</th><th>Map</th></tr>
+<tr><td>Syntax</td><td><code>[| 1; 2 |]</code></td><td><code>[1; 2]</code></td><td><code>set [1; 2]</code></td><td><code>map [("a",1)]</code></td></tr>
+<tr><td>Holds</td><td>same-type elements</td><td>same-type elements</td><td>unique elements</td><td>key-value pairs</td></tr>
+<tr><td>Size (slide)</td><td>fixed</td><td>flexible</td><td>—</td><td>—</td></tr>
+<tr><td>Key property</td><td>fixed-size</td><td>linked list</td><td>unique</td><td>unique keys, ordered, fast lookup</td></tr>
+</table></div>
+<h3>Tuple vs Record</h3>
+<div class="tablewrap"><table>
+<tr><th></th><th>Tuple</th><th>Record</th></tr>
+<tr><td>Names</td><td>No</td><td>Yes</td></tr>
+<tr><td>Fixed size</td><td>Yes</td><td>Yes (fields fixed in type)</td></tr>
+<tr><td>Best for</td><td>coordinates, RGB</td><td>Person (Name, Age)</td></tr>
+</table></div>
+<h3>Ways to define a function</h3>
+<div class="tablewrap"><table>
+<tr><th>Kind</th><th>Syntax</th><th>Example</th></tr>
+<tr><td>Normal</td><td><code>let f x y = …</code></td><td><code>let add x y = x + y</code></td></tr>
+<tr><td>Inline</td><td><code>let inline f x y = …</code></td><td><code>let inline add x y = x + y</code></td></tr>
+<tr><td>Anonymous</td><td><code>fun x y -&gt; …</code></td><td><code>let add = fun x y -&gt; x + y</code></td></tr>
+<tr><td>Returns function</td><td><code>let f a = fun x -&gt; …</code></td><td><code>makeMultiplier</code></td></tr>
+<tr><td>Partial</td><td><code>let g = f a</code></td><td><code>let add5 = add 5</code></td></tr>
+</table></div>
+<h3>Tuple access methods</h3>
+<div class="tablewrap"><table>
+<tr><th></th><th>Pattern matching</th><th>fst / snd</th></tr>
+<tr><td>Works with</td><td>any size / nested</td><td>only 2 elements</td></tr>
+<tr><td>Example</td><td><code>let ((x, y), (n, a)) = t</code></td><td><code>fst (snd t)</code></td></tr>
+<tr><td>Clarity</td><td>most common & clear</td><td>manual, step by step</td></tr>
+</table></div>
+</div></details>
+
+<details class="card" open><summary><span class="num">E</span> Common mistakes & traps</summary><div class="body">
+<ol>
+<li>تنسى الـ pipes في الـ array: <code>[| 1; 2 |]</code> مش <code>[1; 2]</code>.</li>
+<li>تكتب <code>[1, 2, 3]</code> بدل <code>[1; 2; 3]</code>.</li>
+<li>تنادي <code>mySet.Add(5)</code> وتتوقع إن الأصلية اتغيرت.</li>
+<li>تخلط بين <code>:</code> في تعريف الـ record و <code>=</code> في إنشاء القيمة.</li>
+<li>تستخدم <code>fst</code>/<code>snd</code> على tuple فيها 3 عناصر.</li>
+<li>تنسى إن الـ Map keys لازم تبقى unique.</li>
+<li>تفتكر إن Map بتتعدّل في مكانها (هي immutable).</li>
+<li>تنسى case في الـ match بتاع الـ DU.</li>
+<li>تنسى الأقواس في <code>f (f x)</code>.</li>
+<li>تفتكر إن الـ lambda لازم يبقى ليها اسم.</li>
+<li>تفتكر إن <code>add 5</code> غلط لأنها ناقصة argument (هي partial application وصح).</li>
+</ol>
+</div></details>
+</section>
+
+<!-- ======================= MCQ ======================= -->
+<section class="panel" id="mcq">
+<h2>❓ Phase 4 — MCQ Training</h2>
+<div class="toolbar">
+  <span class="score" id="scoreBox">Score: 0 / 0</span>
+  <div class="bar"><i id="progBar"></i></div>
+  <select class="btn" id="levelFilter" aria-label="Filter by level">
+    <option value="all">All levels</option><option value="easy">Easy</option><option value="medium">Medium</option><option value="hard">Hard</option>
+  </select>
+  <button class="btn" id="revealAll" type="button">Reveal all</button>
+  <button class="btn" id="resetMcq" type="button">Reset</button>
+</div>
+<div id="mcqList"></div>
+</section>
+
+<!-- ======================= WRITTEN ======================= -->
+<section class="panel" id="written">
+<h2>✍️ Phase 4 — Written Questions</h2>
+<p>حاول تكتب الإجابة بإيدك الأول، وبعدين اضغط <b>Show model answer</b>.</p>
+<h3>Short answer</h3>
+<div id="shortList"></div>
+<h3>Long-form</h3>
+<div id="longList"></div>
+</section>
+
+<!-- ======================= REVISION ======================= -->
+<section class="panel" id="revision">
+<h2>🎯 Phase 5 — Rapid Revision</h2>
+
+<div class="sheet">
+<h3>📄 1-Page Ultra-Fast Sheet</h3>
+<ul>
+<li><b>Basic types:</b> int, float, String, bool · <b>Compound:</b> List, Array, Tuple, Set, … · print any: <code>printfn "%A"</code> · <code>printfn</code> = new line.</li>
+<li><b>Array</b> <code>[| 1; 2; 3; 4 |]</code> = fixed-size, same type · <b>List</b> <code>[1; 2; 3; 4]</code> = flexible-size, linked list.</li>
+<li><b>Set</b> = unordered, unique · <code>set [1; 2; 3; 4]</code> · <code>.Add(5)</code> <code>.Remove(3)</code> <code>.Contains(2)</code> (true) / <code>(7)</code> (false).</li>
+<li><b>Record</b> = named fields (types may differ): <code>type Person = { Name: string; Age: int; Job: string }</code>.</li>
+<li><b>Tuple</b> = ordered, fixed count: simple <code>(3, 5)</code>, mixed <code>("Alice", 25, true)</code>, nested <code>((1, 2), ("Alice", true))</code>. <code>fst</code>/<code>snd</code> only for 2 elements; pattern matching best.</li>
+<li><b>Tuple vs Record:</b> tuple = no names (coords, RGB) · record = named (Person).</li>
+<li><b>Map</b> = key-value, unique keys, immutable, ordered by key, fast lookup · <code>.["a"]</code> · <code>ContainsKey</code> · <code>Add</code> / <code>Remove</code> → new map.</li>
+<li><b>DU</b> = one of several cases: <code>Success of data: string | Error of message: string | Timeout</code> + <code>match</code>.</li>
+<li><b>Inline</b> = compiler replaces call with body · <b>Higher-order</b> = takes or returns function · <b>Lambda</b> = <code>fun x y -&gt; x + y</code> · <b>Partial application</b> = <code>add 5</code>.</li>
+</ul>
+</div>
+
+<div class="sheet">
+<h3>🧮 Key rules / syntax</h3>
+<div class="tablewrap"><table>
+<tr><th>Rule</th><th>Syntax</th></tr>
+<tr><td>Array</td><td><code>let numbers = [| 1; 2; 3; 4 |]</code></td></tr>
+<tr><td>List</td><td><code>let numbers = [1; 2; 3; 4]</code></td></tr>
+<tr><td>Set</td><td><code>let mySet = set [1; 2; 3; 4]</code></td></tr>
+<tr><td>Record type</td><td><code>type Person = { Name: string; Age: int; Job: string }</code></td></tr>
+<tr><td>Record value</td><td><code>let person = { Name = "Ali"; Age = 25; Job = "Engineer" }</code></td></tr>
+<tr><td>Tuple</td><td><code>let t = (value1, value2, ..., valueN)</code></td></tr>
+<tr><td>Destructure</td><td><code>let (day, month, year) = date</code></td></tr>
+<tr><td>Map</td><td><code>let myMap = map [("a", 1); ("b", 2); ("c", 3)]</code></td></tr>
+<tr><td>Map access</td><td><code>myMap.["a"]</code> · <code>myMap.ContainsKey("a")</code></td></tr>
+<tr><td>DU</td><td><code>type ApiResponse = | Success of data: string | Error of message: string | Timeout</code></td></tr>
+<tr><td>Inline</td><td><code>let inline add x y = x + y</code></td></tr>
+<tr><td>HOF</td><td><code>let applyTwice f x = f (f x)</code></td></tr>
+<tr><td>Returns function</td><td><code>let makeMultiplier factor = fun x -&gt; x * factor</code></td></tr>
+<tr><td>Lambda</td><td><code>fun parameter1 parameter2 -&gt; expression</code></td></tr>
+<tr><td>List.map</td><td><code>List.map (fun x -&gt; x * x) numbers</code></td></tr>
+<tr><td>Partial</td><td><code>let add5 = add 5</code></td></tr>
+</table></div>
+</div>
+
+<div class="sheet">
+<h3>🌙 Night-before-exam cheat sheet (10 دقايق)</h3>
+<label class="chk"><input type="checkbox"><span>أعرف الفرق بين <code>[| |]</code> و <code>[ ]</code> و <code>set [ ]</code> وتعريف كل واحد.</span></label>
+<label class="chk"><input type="checkbox"><span>أكتب Set: Add / Remove / Contains وأعرف outputs (true / false).</span></label>
+<label class="chk"><input type="checkbox"><span>أعرّف Record وأنشئ instance وأطبعه بـ <code>%A</code>.</span></label>
+<label class="chk"><input type="checkbox"><span>أقدر أفك nested tuple بـ pattern matching وبـ fst/snd.</span></label>
+<label class="chk"><input type="checkbox"><span>أعرف إمتى tuple وإمتى record.</span></label>
+<label class="chk"><input type="checkbox"><span>أكتب Map وأعمل access / ContainsKey / Add / Remove / loop.</span></label>
+<label class="chk"><input type="checkbox"><span>أكتب DU + match وأعرف outputs الـ 3 cases.</span></label>
+<label class="chk"><input type="checkbox"><span>أفسر inline وأكتب مثال.</span></label>
+<label class="chk"><input type="checkbox"><span>أحفظ outputs: 7 · 20 · 12 · [1; 4; 9; 16; 25] · 15, 25.</span></label>
+<label class="chk"><input type="checkbox"><span>أفرّق بين higher-order (يأخد/يرجّع function) و lambda (من غير اسم) و partial application.</span></label>
+<div class="box warn"><b class="t">آخر نصيحة</b> اكتب تعريفات السلايدز حرفيًا (fixed-size / flexible-size / unique elements / named fields / key-value pairs)، وادّي مثال كود لكل تعريف.</div>
+</div>
+</section>
+
+</main>
+<footer>Built for exam success · Switch sections from the top bar · Print → Revision Sheet</footer>
+
+<script>
+(function(){
+  /* ---------- Theme ---------- */
+  var root=document.documentElement, themeBtn=document.getElementById('themeBtn');
+  function applyTheme(t){root.setAttribute('data-theme',t);themeBtn.textContent=t==='dark'?'☀️ Light':'🌙 Dark';}
+  var saved=null;try{saved=localStorage.getItem('fs-theme');}catch(e){}
+  if(!saved){saved=(window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';}
+  applyTheme(saved);
+  themeBtn.addEventListener('click',function(){
+    var n=root.getAttribute('data-theme')==='dark'?'light':'dark';applyTheme(n);
+    try{localStorage.setItem('fs-theme',n);}catch(e){}
+  });
+
+  /* ---------- Tabs ---------- */
+  var tabs=document.querySelectorAll('.tab'),panels=document.querySelectorAll('.panel');
+  function show(id){
+    tabs.forEach(function(t){t.classList.toggle('active',t.dataset.tab===id);});
+    panels.forEach(function(p){p.classList.toggle('active',p.id===id);});
+    window.scrollTo({top:0,behavior:'smooth'});
+    try{history.replaceState(null,'','#'+id);}catch(e){}
+  }
+  tabs.forEach(function(t){t.addEventListener('click',function(){show(t.dataset.tab);});});
+  var h=(location.hash||'').slice(1);
+  if(h&&document.getElementById(h)&&document.getElementById(h).classList.contains('panel')){show(h);}
+
+  /* ---------- Expand / collapse ---------- */
+  function setAll(open){document.querySelectorAll('.panel.active details.card').forEach(function(d){d.open=open;});}
+  document.getElementById('expandBtn').addEventListener('click',function(){setAll(true);});
+  document.getElementById('collapseBtn').addEventListener('click',function(){setAll(false);});
+
+  /* ---------- MCQ data ---------- */
+  var MCQ=[
+  /* ===== EASY ===== */
+  {l:'easy',q:'Which list shows the <b>basic types</b> in the slides?',o:['int, float, String, bool','List, Array, Tuple, Set','Record, Map, Union','unit, list, tuple'],a:0,e:'Basic = int, float, String, bool. الـ List/Array/Tuple/Set دول <b>compound types</b>.'},
+  {l:'easy',q:'Which format specifier prints <b>any type</b> with printfn?',o:['%d','%s','%A','%b'],a:2,e:'<code>printfn "%A"</code> بتطبع أي type (list, tuple, record, map ...).'},
+  {l:'easy',q:'What does the <b>n</b> at the end of <code>printfn</code> mean?',o:['It prints a number','It refers to a new line','It formats floats','It means null'],a:1,e:'<code>printfn</code> بتطبع وتنزل سطر جديد، و <code>printf</code> من غير new line.'},
+  {l:'easy',q:'Which expression creates an <b>array</b>?',o:['[| 1; 2; 3; 4 |]','[1; 2; 3; 4]','(1, 2, 3, 4)','set [1; 2; 3; 4]'],a:0,e:'الـ array بيستخدم <code>[| |]</code> (أقواس مربعة + pipe).'},
+  {l:'easy',q:'Which expression creates a <b>list</b>?',o:['[| 1; 2; 3; 4 |]','{1; 2; 3; 4}','[1; 2; 3; 4]','(1; 2; 3; 4)'],a:2,e:'الـ list = <code>[1; 2; 3; 4]</code> والفاصل <code>;</code>.'},
+  {l:'easy',q:'According to the slides, an <b>array</b> is:',o:['A flexible-size collection like a linked list','A fixed-size collection of elements of the same type','An unordered collection of unique elements','A collection of key-value pairs'],a:1,e:'Array: Fixed-size collection of elements of the same type.'},
+  {l:'easy',q:'According to the slides, a <b>set</b> is:',o:['An ordered collection with duplicates','A collection of named fields','An unordered collection of unique elements','A fixed-size collection'],a:2,e:'Set = unordered collection of <b>unique</b> elements.'},
+  {l:'easy',q:'A <b>record</b> in F# holds:',o:['Values without names','A set of named fields, each possibly of a different type','Only strings','Only key-value pairs'],a:1,e:'Record = named fields + أنواع ممكن تختلف.'},
+  {l:'easy',q:'In a <b>tuple</b>, the number of elements is:',o:['Flexible and can change anytime','Fixed when the tuple is created','Always exactly two','Unlimited and unnamed'],a:1,e:'السلايد: fixed when it is created.'},
+  {l:'easy',q:'A <b>map</b> is a collection of:',o:['Unique values only','Key-value pairs where each key is unique','Named fields','Ordered numbers'],a:1,e:'Maps (dictionaries) = key-value pairs و الـ key unique.'},
+  {l:'easy',q:'Which function returns the first element of a <b>2-element</b> tuple?',o:['fst','first','head','snd'],a:0,e:'<code>fst</code> = first, <code>snd</code> = second.'},
+  {l:'easy',q:'Which keyword defines an <b>anonymous function</b> (lambda)?',o:['lambda','fun','func','def'],a:1,e:'<code>fun x y -&gt; x + y</code>.'},
+  {l:'easy',q:'Which keyword lets the compiler replace a function call with the function body at compile time?',o:['inline','static','rec','mutable'],a:0,e:'<code>let inline add x y = x + y</code>.'},
+  {l:'easy',q:'In <code>type ApiResponse = | Success of data: string | Error of message: string | Timeout</code>, which case carries <b>no data</b>?',o:['Success','Error','Timeout','All of them'],a:2,e:'<code>Timeout</code> من غير <code>of</code> يعني من غير data.'},
+  /* ===== MEDIUM ===== */
+  {l:'medium',q:'What does this print?<pre><code class="fs">let mySet = set [1; 2; 3; 4]\nlet hasSeven = mySet.Contains(7)\nprintfn "%b" hasSeven</code></pre>',o:['true','false','7','Compile error'],a:1,e:'الـ set مفيهاش 7 فـ <code>Contains(7)</code> = <b>false</b>.'},
+  {l:'medium',q:'What does <code>mySet.Add(5)</code> do to <code>mySet = set [1; 2; 3; 4]</code>?',o:['Modifies mySet in place','Returns a new set with 5 added; mySet stays unchanged','Throws an error because 5 is not in the set','Returns bool'],a:1,e:'الـ Add بترجّع set جديدة وبنخزّنها في <code>updatedSet</code>.'},
+  {l:'medium',q:'Which is the correct <b>record type definition</b>?',o:['type Person = ( Name: string, Age: int )','type Person = { Name: string; Age: int; Job: string }','type Person = { Name = "Ali"; Age = 25 }','type Person = [ Name; Age; Job ]'],a:1,e:'في التعريف: <code>Field: type</code> وفاصل <code>;</code>. الـ <code>=</code> بتستخدم وقت إنشاء القيمة.'},
+  {l:'medium',q:'What is printed?<pre><code class="fs">let date = (22, 10, 2024)\nlet (day, month, year) = date\nprintfn "Date: %02d-%02d-%04d" day month year</code></pre>',o:['Date: 22-10-2024','Date: 2024-10-22','Date: 22-10-24','Compile error'],a:0,e:'<code>%02d</code> خانتين و <code>%04d</code> أربع خانات: 22-10-2024.'},
+  {l:'medium',q:'<code>let nestedTuple = ((1, 2), ("Alice", true))</code>. What is <code>fst (fst nestedTuple)</code>?',o:['(1, 2)','1','2','"Alice"'],a:1,e:'<code>fst nestedTuple</code> = (1, 2) ثم <code>fst</code> = <b>1</b>.'},
+  {l:'medium',q:'With the same nestedTuple, what is <code>fst (snd nestedTuple)</code>?',o:['true','1','"Alice"','("Alice", true)'],a:2,e:'<code>snd nestedTuple</code> = ("Alice", true) ثم <code>fst</code> = "Alice".'},
+  {l:'medium',q:'With the same nestedTuple, what is <code>snd (snd nestedTuple)</code>?',o:['"Alice"','true','2','false'],a:1,e:'<code>snd ("Alice", true)</code> = <b>true</b>.'},
+  {l:'medium',q:'Why can <code>fst</code> and <code>snd</code> NOT be used on <code>("Alice", 25, true)</code>?',o:['Because it has mixed types','Because they only work with tuples containing 2 elements','Because it is nested','Because it is a record'],a:1,e:'Note السلايد: fst and snd only work with tuples containing 2 elements.'},
+  {l:'medium',q:'Given <code>let myMap = map [("a", 1); ("b", 2); ("c", 3)]</code>, what is <code>myMap.["a"]</code>?',o:['"a"','0','1','true'],a:2,e:'بتجيب الـ value المرتبطة بالـ key "a" = 1.'},
+  {l:'medium',q:'What does <code>myMap.Remove("b")</code> do?',o:['Deletes b from myMap in place','Returns a new map without key "b"; myMap is unchanged','Returns bool','Throws always'],a:1,e:'الـ Maps immutable؛ أي تعديل بيطلّع map جديدة (<code>smallerMap</code>).'},
+  {l:'medium',q:'What does <code>handleApiResponse Timeout</code> print?',o:['Request succeeded with data: Timeout','Request failed with error: Timeout','Request timed out','Nothing'],a:2,e:'الـ case <code>Timeout -&gt; printfn "Request timed out"</code>.'},
+  {l:'medium',q:'What does <code>handleApiResponse (Error "Network error occurred")</code> print?',o:['Request succeeded with data: Network error occurred','Request failed with error: Network error occurred','Request timed out','Network error occurred'],a:1,e:'الـ Error case بيطبع "Request failed with error: %s".'},
+  {l:'medium',q:'<code>let applyTwice f x = f (f x)</code> and <code>let increment x = x + 1</code>. What is <code>applyTwice increment 5</code>?',o:['6','7','10','5'],a:1,e:'increment (increment 5) = increment 6 = <b>7</b>.'},
+  {l:'medium',q:'<code>let makeMultiplier factor = fun x -&gt; x * factor</code> and <code>let double = makeMultiplier 2</code>. What is <code>double 10</code>?',o:['12','2','20','100'],a:2,e:'double = fun x -&gt; x * 2 → 10 × 2 = <b>20</b>.'},
+  {l:'medium',q:'What is the output?<pre><code class="fs">let numbers = [1; 2; 3; 4; 5]\nlet squares = List.map (fun x -&gt; x * x) numbers\nprintfn "Squares: %A" squares</code></pre>',o:['Squares: [1; 2; 3; 4; 5]','Squares: [2; 4; 6; 8; 10]','Squares: [1; 4; 9; 16; 25]','Squares: 55'],a:2,e:'التربيع لكل عنصر: 1, 4, 9, 16, 25.'},
+  {l:'medium',q:'After <code>let ((x, y), (name, isActive)) = nestedTuple</code> with nestedTuple = ((1, 2), ("Alice", true)), what does <code>printfn "Name: %s, Active: %b" name isActive</code> print?',o:['Name: Alice, Active: true','Name: 1, Active: 2','Name: Alice, Active: false','Compile error'],a:0,e:'Pattern matching بيفك الـ nested tuple: name = "Alice"، isActive = true.'},
+  {l:'medium',q:'Which best describes a <b>discriminated union</b>?',o:['A type with named fields','A type whose value is exactly one of several named cases, each optionally carrying data','A collection of unique elements','A fixed-size collection'],a:1,e:'DU = cases (<code>|</code>) وكل case ممكن يحمل data.'},
+  /* ===== HARD ===== */
+  {l:'hard',q:'What does this print?<pre><code class="fs">let add x y = x + y\nlet add5 = add 5\nlet result1 = add5 10\nlet result2 = add5 20\nprintfn " %d, %d" result1 result2</code></pre>',o:['15, 25 (no leading space)',' 15, 25 (with a leading space)','5, 10','Compile error because add5 is incomplete'],a:1,e:'<code>add 5</code> partial application. الـ format string فيه مسافة في الأول فالـ output بيبدأ بمسافة.'},
+  {l:'hard',q:'Why do both <code>add 3 5</code> and <code>add 10.0 5.0</code> work with <code>let inline add x y = x + y</code>?',o:['Because inline converts everything to float','Because inline lets the operator be resolved at each call site, so it works for int and float','Because F# ignores types','Because add is a lambda'],a:1,e:'الـ inline بيخلّي الـ <code>+</code> يتحل عند كل استدعاء حسب النوع (8 و 15.0).'},
+  {l:'hard',q:'Which data is best represented by a <b>tuple</b> rather than a record (per the slides)?',o:['A Person with Name, Age, Job','Coordinates (x, y) or RGB color values','An API response','A dictionary of users'],a:1,e:'Tuple للتجميعات الصغيرة البسيطة اللي مش محتاجة أسماء. Record لما الأسماء بتوضح.'},
+  {l:'hard',q:'Which statement about <b>maps</b> is FALSE?',o:['Maps are immutable','Any modification results in a new map','Maps are stored in an ordered fashion based on the keys','Maps allow duplicate keys'],a:3,e:'الـ keys لازم <b>unique</b>. الباقي صحيح حسب السلايد.'},
+  {l:'hard',q:'What does <code>makeMultiplier 2</code> return?',o:['The number 2','A function that multiplies its input by 2','The number 20','Unit'],a:1,e:'بترجّع <code>fun x -&gt; x * 2</code>، يعني higher-order function بترجّع function.'},
+  {l:'hard',q:'Which of these is NOT a higher-order function?',o:['let applyTwice f x = f (f x)','let makeMultiplier factor = fun x -&gt; x * factor','List.map','let increment x = x + 1'],a:3,e:'<code>increment</code> بتاخد رقم وترجّع رقم؛ مش بتاخد ولا بترجّع function.'},
+  {l:'hard',q:'<code>let add = fun x y -&gt; x + y</code> is equivalent to:',o:['let add x y = x + y','let add = x + y','let add (x, y) = x * y','let add x = y'],a:0,e:'الـ lambda ربطناها باسم <code>add</code> فبقت نفس الدالة العادية.'},
+  {l:'hard',q:'Which statement correctly compares arrays and lists (per the slides)?',o:['Array: flexible-size; List: fixed-size','Array: fixed-size, same type; List: flexible-size, like a linked list','Both are fixed-size','Array stores key-value pairs'],a:1,e:'Array: Fixed-size · List: Flexible-size similar to a linked list.'},
+  {l:'hard',q:'What does <code>printfn "%A" person</code> do when <code>person = { Name = "Ali"; Age = 25; Job = "Engineer" }</code>?',o:['Compile error because %A is for primitives','Prints a structured representation of the record with its fields and values','Prints only Name','Prints a memory address'],a:1,e:'<code>%A</code> بتطبع أي type بشكل structured.'},
+  {l:'hard',q:'What happens if the <code>Timeout</code> case is omitted from the <code>match</code> in <code>handleApiResponse</code>?',o:['Nothing; it is fine','The compiler warns about incomplete pattern matches','The program prints Timeout','A runtime crash on every call'],a:1,e:'الـ compiler بيحذّر (incomplete matches) لأن case مش متغطي.'},
+  {l:'hard',q:'What is <code>add 5</code> (with <code>let add x y = x + y</code>)?',o:['An error because y is missing','A new function waiting for the second argument (partial application)','The number 5','Unit'],a:1,e:'Partial application → دالة جديدة <code>add5</code>.'},
+  {l:'hard',q:'How many elements does <code>set [1; 2; 2; 3]</code> contain?',o:['4','3','2','Error'],a:1,e:'الـ Set فيها <b>unique elements</b> بس، فالتكرار بيتشال: {1, 2, 3}.'}
+];
+
+var answered=0,correct=0,mcqList=document.getElementById('mcqList');
+  /* shuffle options once per page load so the correct answer is not always B */
+  MCQ.forEach(function(q){
+    var idx=q.o.map(function(_,i){return i;});
+    for(var i=idx.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=idx[i];idx[i]=idx[j];idx[j]=t;}
+    q.o=idx.map(function(k){return q.o[k];});
+    q.a=idx.indexOf(q.a);
+  });
+  function hl(root){
+    root.querySelectorAll('code.fs').forEach(function(c){
+      if(c.dataset.done)return;c.dataset.done='1';
+      var t=c.textContent.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+      t=t.replace(/(\/\/.*$)|("(?:[^"\\]|\\.)*")|\b(let|mutable|rec|if|then|elif|else|for|in|do|while|match|with|fun|type|of|inline|true|false)\b|\b(\d+(?:\.\d+)?)\b/gm,function(m,cm,st,kw,nm){
+        if(cm)return '<span class="c">'+cm+'</span>';
+        if(st)return '<span class="s">'+st+'</span>';
+        if(kw)return '<span class="k">'+kw+'</span>';
+        return '<span class="n">'+nm+'</span>';
+      });
+      c.innerHTML=t;
+    });
+  }
+  function updateScore(){
+    var total=MCQ.length;
+    document.getElementById('scoreBox').textContent='Score: '+correct+' / '+answered+'  (of '+total+')';
+    document.getElementById('progBar').style.width=Math.round(answered/total*100)+'%';
+  }
+  function lock(card,idx,chosen){
+    var q=MCQ[idx],btns=card.querySelectorAll('.opt');
+    btns.forEach(function(b,i){
+      b.disabled=true;
+      if(i===q.a)b.classList.add('correct');
+      else if(i===chosen)b.classList.add('wrong');
+    });
+    card.querySelector('.expl').classList.add('show');
+    card.dataset.done='1';
+  }
+  function renderMcq(){
+    var f=document.getElementById('levelFilter').value;
+    mcqList.innerHTML='';
+    MCQ.forEach(function(q,idx){
+      if(f!=='all'&&q.l!==f)return;
+      var d=document.createElement('div');d.className='q';d.dataset.idx=idx;
+      var html='<div class="qt"><span class="badge b-'+q.l+'">'+q.l.toUpperCase()+'</span>Q'+(idx+1)+'. '+q.q+'</div>';
+      d.innerHTML=html;
+      q.o.forEach(function(o,i){
+        var b=document.createElement('button');b.type='button';b.className='opt';b.innerHTML=String.fromCharCode(65+i)+'. '+o;
+        b.addEventListener('click',function(){
+          if(d.dataset.done)return;
+          lock(d,idx,i);answered++;if(i===q.a)correct++;updateScore();
+        });
+        d.appendChild(b);
+      });
+      var tg=document.createElement('button');tg.type='button';tg.className='btn';tg.textContent='Toggle explanation';
+      var ex=document.createElement('div');ex.className='expl box tip';ex.innerHTML='<b class="t">Explanation</b>'+q.e;
+      tg.addEventListener('click',function(){ex.classList.toggle('show');});
+      d.appendChild(tg);d.appendChild(ex);
+      mcqList.appendChild(d);
+    });
+    hl(mcqList);
+    mcqList.querySelectorAll('p,li,.qt,.expl').forEach(function(e){e.setAttribute('dir','auto');});
+  }
+  document.getElementById('levelFilter').addEventListener('change',function(){answered=0;correct=0;updateScore();renderMcq();});
+  document.getElementById('resetMcq').addEventListener('click',function(){answered=0;correct=0;updateScore();renderMcq();});
+  document.getElementById('revealAll').addEventListener('click',function(){
+    mcqList.querySelectorAll('.q').forEach(function(c){
+      if(!c.dataset.done){lock(c,+c.dataset.idx,-1);}
+    });
+  });
+  renderMcq();updateScore();
+
+  /* ---------- Written ---------- */
+  var SHORT=[
+  {q:'List the basic and compound types in F#, and how do you print any type?',a:'<ul><li><b>Basic types:</b> int, float, String, bool.</li><li><b>Compound types:</b> List, Array, Tuple, Set, ... (also Map, Record, Discriminated Union).</li><li><b>Printing:</b> <code>printfn "%A"</code> prints any type.</li></ul>'},
+  {q:'What is the difference between <code>printf</code> and <code>printfn</code>?',a:'<p>The <b>n</b> at the end of <code>printfn</code> refers to a <b>new line</b>: <code>printfn</code> prints and moves to a new line, while <code>printf</code> prints without a new line.</p>'},
+  {q:'Differentiate between arrays and lists with examples.',a:'<ul><li><b>Array:</b> fixed-size collection of elements of the same type. <code>let numbers = [| 1; 2; 3; 4 |]</code></li><li><b>List:</b> flexible-size collection, similar to a linked list. <code>let numbers = [1; 2; 3; 4]</code></li></ul>'},
+  {q:'What is a set? Show how to create it and add, remove and test membership.',a:'<p>A <b>set</b> is an unordered collection of <b>unique elements</b>.</p><pre><code class="fs">let mySet = set [1; 2; 3; 4]\nlet updatedSet = mySet.Add(5)\nlet smallerSet = mySet.Remove(3)\nlet hasTwo = mySet.Contains(2)    // true\nlet hasSeven = mySet.Contains(7)  // false</code></pre><p>Add and Remove return a new set; Contains returns a bool (printed with <code>%b</code>).</p>'},
+  {q:'What is a record and what are its advantages? Give an example.',a:'<p>A <b>record</b> holds a set of <b>named fields</b>, each potentially of a different type. It is ideal for organizing complex data because each field is clearly named, making it easy to understand and use.</p><pre><code class="fs">type Person = { Name: string; Age: int; Job: string }\nlet person = { Name = "Ali"; Age = 25; Job = "Engineer" }\nprintfn "%A" person</code></pre>'},
+  {q:'Define a tuple and show how to unpack one.',a:'<p>A <b>tuple</b> is an ordered collection of values whose number of elements is fixed when it is created. Syntax: <code>let tupleName = (value1, value2, ..., valueN)</code>.</p><pre><code class="fs">let date = (22, 10, 2024)  // (day, month, year)\nlet (day, month, year) = date\nprintfn "Date: %02d-%02d-%04d" day month year  // 22-10-2024</code></pre>'},
+  {q:'What is the difference between a tuple and a record, and when do you use each?',a:'<ul><li>A tuple groups values <b>without names</b>; a record provides <b>named fields</b>, making it clearer and more readable for structured data.</li><li><b>Use a tuple</b> for small, simple groupings that do not need names (coordinates, RGB values).</li><li><b>Use a record</b> for more complex data or when naming fields clarifies the code (Person with Name and Age).</li></ul>'},
+  {q:'What is a map? Show creation, access and ContainsKey.',a:'<p>A <b>map</b> (dictionary) is a collection of key-value pairs where each key is unique.</p><pre><code class="fs">let myMap = map [("a", 1); ("b", 2); ("c", 3)]\nlet value = myMap.["a"]              // 1\nlet hasKey = myMap.ContainsKey("a")  // true</code></pre>'},
+  {q:'What is a discriminated union? Give an example.',a:'<p>A <b>discriminated union</b> is a type whose value is exactly one of several named cases; each case may carry data. It is handled with pattern matching.</p><pre><code class="fs">type ApiResponse =\n    | Success of data: string\n    | Error of message: string\n    | Timeout\n\nlet response1 = Success "User data loaded"</code></pre>'},
+  {q:'What is an inline function and why use it?',a:'<p>An <b>inline</b> function lets the compiler <b>replace the function call with the function body at compile time</b>. This can improve performance, especially when the function is small and called many times, because it avoids the overhead of a function call.</p><pre><code class="fs">let inline add x y = x + y\nlet result1 = add 3 5        // 8\nlet result2 = add 10.0 5.0   // 15.0</code></pre>'},
+  {q:'Define higher-order functions and mention their two key concepts.',a:'<p>Higher-order functions are functions that <b>take other functions as parameters or return functions as their results</b>. This enables more abstract and reusable code.</p><ol><li>Passing functions as arguments (<code>applyTwice</code>).</li><li>Returning functions from functions (<code>makeMultiplier</code>).</li></ol>'},
+  {q:'What is an anonymous function (lambda)? Write its syntax and an example.',a:'<p>An <b>anonymous function</b> (lambda expression) is a function defined <b>without a name</b>, often used for short-term tasks and defined inline where needed.</p><pre><code class="fs">fun parameter1 parameter2 -&gt; expression\n\nlet add = fun x y -&gt; x + y\nlet result = add 5 7   // 12</code></pre>'},
+  {q:'Explain partial application with an example.',a:'<p>Calling a function with only some of its arguments returns a <b>new function</b> that waits for the rest.</p><pre><code class="fs">let add x y = x + y\nlet add5 = add 5\nlet result1 = add5 10  // 15\nlet result2 = add5 20  // 25</code></pre>'}
+  ];
+  var LONG=[
+  {q:'Compare the F# data structures: array, list, set, map, tuple and record. Include syntax and when to use each.',a:'<div class="tablewrap"><table><tr><th>Type</th><th>Definition</th><th>Syntax</th></tr><tr><td>Array</td><td>Fixed-size collection, same type</td><td><code>[| 1; 2; 3; 4 |]</code></td></tr><tr><td>List</td><td>Flexible-size, like a linked list</td><td><code>[1; 2; 3; 4]</code></td></tr><tr><td>Set</td><td>Unordered collection of unique elements</td><td><code>set [1; 2; 3; 4]</code></td></tr><tr><td>Map</td><td>Key-value pairs, unique keys, immutable, ordered by key, efficient lookup</td><td><code>map [("a", 1); ("b", 2)]</code></td></tr><tr><td>Tuple</td><td>Ordered, fixed number of elements, no names</td><td><code>(3, 5)</code> / <code>("Alice", 25, true)</code></td></tr><tr><td>Record</td><td>Named fields, types may differ</td><td><code>{ Name = "Ali"; Age = 25 }</code></td></tr></table></div><ul><li>Use a <b>tuple</b> for small simple groupings (coordinates, RGB); a <b>record</b> when named fields clarify the data.</li><li>Use a <b>map</b> for fast lookup by key; a <b>set</b> when uniqueness matters.</li><li>Print any of them with <code>printfn "%A"</code>.</li></ul>'},
+  {q:'Explain nested tuples and the two ways to access their values.',a:'<p>A <b>nested tuple</b> contains tuples inside it:</p><pre><code class="fs">let nestedTuple = ((1, 2), ("Alice", true))</code></pre><h3>1) Pattern matching (most common and clear)</h3><pre><code class="fs">let ((x, y), (name, isActive)) = nestedTuple\nprintfn "X: %d, Y: %d" x y                   // X: 1, Y: 2\nprintfn "Name: %s, Active: %b" name isActive  // Name: Alice, Active: true</code></pre><h3>2) Manual access with fst and snd</h3><pre><code class="fs">let x = fst (fst nestedTuple)          // 1\nlet name = fst (snd nestedTuple)       // "Alice"\nlet isTrue = snd (snd nestedTuple)     // true\nprintfn "X: %d, Name: %s, IsTrue: %b" x name isTrue</code></pre><p><b>Note:</b> fst and snd only work with tuples containing 2 elements.</p>'},
+  {q:'Explain discriminated unions with the ApiResponse example, including pattern matching and the outputs.',a:'<pre><code class="fs">type ApiResponse =\n    | Success of data: string\n    | Error of message: string\n    | Timeout\n\nlet handleApiResponse response =\n    match response with\n    | Success data -&gt; printfn "Request succeeded with data: %s" data\n    | Error message -&gt; printfn "Request failed with error: %s" message\n    | Timeout -&gt; printfn "Request timed out"\n\nlet response1 = Success "User data loaded"\nlet response2 = Error "Network error occurred"\nlet response3 = Timeout</code></pre><ul><li>A DU value is exactly one of the cases; Success and Error carry a string, Timeout carries nothing.</li><li>Outputs: <b>Request succeeded with data: User data loaded</b>, <b>Request failed with error: Network error occurred</b>, <b>Request timed out</b>.</li><li>Pattern matching handles every case and binds the carried data to a variable.</li></ul>'},
+  {q:'Discuss higher-order functions in F# with the two key concepts and examples.',a:'<p>Higher-order functions <b>take functions as parameters or return functions</b>, enabling abstract and reusable code.</p><h3>1. Passing functions as arguments</h3><pre><code class="fs">let applyTwice f x = f (f x)\nlet increment x = x + 1\nlet result = applyTwice increment 5   // 7</code></pre><h3>2. Returning functions from functions</h3><pre><code class="fs">let makeMultiplier factor =\n    fun x -&gt; x * factor\nlet double = makeMultiplier 2\nlet result = double 10   // 20</code></pre>'},
+  {q:'Explain anonymous functions, List.map, partial application and currying with examples.',a:'<h3>Anonymous function (lambda)</h3><p>A function without a name: <code>fun parameter1 parameter2 -&gt; expression</code>.</p><pre><code class="fs">let add = fun x y -&gt; x + y\nlet result = add 5 7   // 12</code></pre><h3>With collections</h3><pre><code class="fs">let numbers = [1; 2; 3; 4; 5]\nlet squares = List.map (fun x -&gt; x * x) numbers\nprintfn "Squares: %A" squares   // [1; 4; 9; 16; 25]</code></pre><p>Also useful with <code>List.filter</code> and <code>List.fold</code>.</p><h3>Partial application / currying</h3><pre><code class="fs">let add x y = x + y\nlet add5 = add 5\nlet result1 = add5 10  // 15\nlet result2 = add5 20  // 25</code></pre><p>Calling a function with fewer arguments returns a new function that waits for the remaining ones.</p>'},
+  {q:'Explain maps in F#: creation, access, ContainsKey, adding/removing, iteration and key properties.',a:'<pre><code class="fs">let myMap = map [("a", 1); ("b", 2); ("c", 3)]\nlet myMap2 = Map.empty.Add("a", 1).Add("b", 2).Add("c", 3)\n\nlet value = myMap.["a"]              // 1\nlet hasKey = myMap.ContainsKey("a")  // true\n\nlet updatedMap = myMap.Add("d", 4)   // new map\nlet smallerMap = myMap.Remove("b")   // new map\n\nfor (key, value) in myMap do\n    printfn "Key: %s, Value: %d" key value</code></pre><ul><li>A map stores key-value pairs; each key is unique.</li><li>Maps are immutable: any modification results in a new map.</li><li>They are stored in an ordered fashion based on the keys.</li><li>They allow efficient lookup by key, so they are useful for fast data retrieval.</li></ul>'}
+  ];
+  function renderQA(listId,arr,prefix){
+    var box=document.getElementById(listId);
+    arr.forEach(function(it,i){
+      var d=document.createElement('div');d.className='q';
+      d.innerHTML='<div class="qt">'+prefix+(i+1)+'. '+it.q+'</div>';
+      var b=document.createElement('button');b.type='button';b.className='btn';b.textContent='Show model answer';
+      var a=document.createElement('div');a.className='ans box def';a.innerHTML='<b class="t">Model answer</b>'+it.a;
+      b.addEventListener('click',function(){var s=a.classList.toggle('show');b.textContent=s?'Hide model answer':'Show model answer';});
+      d.appendChild(b);d.appendChild(a);box.appendChild(d);
+    });
+    hl(box);
+    box.querySelectorAll('p,li,.qt').forEach(function(e){e.setAttribute('dir','auto');});
+  }
+  renderQA('shortList',SHORT,'S');
+  renderQA('longList',LONG,'L');
+
+  /* ---------- Static content: highlight + bidi ---------- */
+  document.querySelectorAll('pre code').forEach(function(c){
+    if(!c.className)c.className='fs';
+  });
+  document.querySelectorAll('pre code.cs, pre code.bash').forEach(function(c){c.dataset.done='1';});
+  hl(document);
+  document.querySelectorAll('main p, main li, main td, main th, .box').forEach(function(e){
+    if(!e.hasAttribute('dir'))e.setAttribute('dir','auto');
+  });
+})();
+</script>
+</body>
+</html>
