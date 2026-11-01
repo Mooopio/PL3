@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Git &amp; GitHub – PL3 Exam Prep</title>
+<style>
+:root{--bg:#f6f7fb;--card:#fff;--tx:#1b2030;--mu:#5b6478;--ac:#e0662c;--ac2:#2b5d84;--bd:#dde1ea;--ok:#1f8a4c;--no:#c0392b;--hl:#fff3a8;--code:#eef1f6;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#10141c;--card:#181e2a;--tx:#e8ecf4;--mu:#9aa5ba;--bd:#2a3244;--ok:#4cc582;--no:#ff7b6b;--hl:#5a4d00;--code:#222a3a;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#10141c;--card:#181e2a;--tx:#e8ecf4;--mu:#9aa5ba;--bd:#2a3244;--ok:#4cc582;--no:#ff7b6b;--hl:#5a4d00;--code:#222a3a;color-scheme:dark}
+*{box-sizing:border-box}html{scroll-padding-top:70px}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.65 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--card);border-bottom:1px solid var(--bd);padding:10px 16px;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+header h1{font-size:1.05rem;margin:0 auto 0 0}
+nav{display:flex;gap:6px;flex-wrap:wrap}
+button{font:inherit;cursor:pointer;border:1px solid var(--bd);background:var(--bg);color:var(--tx);border-radius:8px;padding:6px 12px;transition:.2s}
+button:hover{border-color:var(--ac)}nav button.on{background:var(--ac);color:#fff;border-color:var(--ac)}
+main{max-width:860px;margin:0 auto;padding:18px 16px 60px}
+section{display:none;animation:f .3s}section.on{display:block}@keyframes f{from{opacity:0;transform:translateY(6px)}to{opacity:1}}
+h2{color:var(--ac2);margin:.2em 0 .6em}h3{margin:1em 0 .3em}
+details{background:var(--card);border:1px solid var(--bd);border-radius:10px;margin:10px 0;padding:2px 14px}
+summary{cursor:pointer;font-weight:650;padding:10px 0}
+code{background:var(--code);padding:1px 6px;border-radius:5px;font:.9em ui-monospace,Consolas,monospace}
+pre{background:#0d1117;color:#d6deeb;padding:12px;border-radius:8px;overflow-x:auto;font-size:.88rem}
+mark{background:var(--hl);color:inherit;padding:0 3px;border-radius:3px}
+.box{border-left:4px solid var(--ac);background:var(--card);padding:8px 14px;border-radius:6px;margin:10px 0}
+.trap{border-color:var(--no)}.mem{border-color:var(--ok)}
+.tw{overflow-x:auto}table{border-collapse:collapse;width:100%;font-size:.93rem}th,td{border:1px solid var(--bd);padding:6px 10px;text-align:left}th{background:var(--code)}
+.q{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:12px 14px;margin:12px 0}
+.o{display:block;width:100%;text-align:left;margin:6px 0}
+.o.ok{background:var(--ok);color:#fff;border-color:var(--ok)}.o.no{background:var(--no);color:#fff;border-color:var(--no)}
+.ex{display:none;margin-top:8px;color:var(--mu)}.ex.s{display:block}
+.score{position:sticky;top:64px;background:var(--card);border:1px solid var(--bd);border-radius:8px;padding:6px 12px;display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.tag{font-size:.75rem;color:var(--mu)}
+</style>
+</head>
+<body>
+<header>
+<h1>🌿 Git &amp; GitHub · PL3 Section 4</h1>
+<nav id="nav"></nav>
+<button id="th" aria-label="Toggle theme">🌓</button>
+</header>
+<main>
+
+<section id="explain" class="on">
+<h2>Deep Explanation</h2>
+<div class="box mem"><b>Big picture:</b> Git is a <mark>version control tool on your computer</mark> that records every change. GitHub is a <mark>website that hosts Git repositories online</mark> so teams can collaborate. Analogy: Git = “save game” checkpoints in a video game; GitHub = cloud storage where your whole team shares the same save file.</div>
+
+<details open><summary>1. Terms to know (from slides)</summary>
+<p>A <mark>repository (repo)</mark> is a storage location where all files of a project are kept, including code and changes made over time.</p>
+<p><b>Git</b> tracks every modification, letting developers <mark>revert to previous versions</mark> if needed.</p>
+<p>In <b>GitHub</b>, the repository is hosted <mark>online</mark>, so developers collaborate on the same project from different locations.</p>
+<p>The slide diagram: <b>Master</b> (green) is the main line. <b>Your work</b> (blue) branches off, makes several commits, and merges back. <b>Someone else’s work</b> (orange) branches and merges back too. Branching lets people work in parallel without breaking the main line.</p></details>
+
+<details><summary>2. Installing Git on Windows</summary>
+<ol><li>Google “git download for window” → official site <code>git-scm.com/downloads/win</code>.</li>
+<li>Choose <b>64-bit Git for Windows Setup</b> (standalone installer). Options: 32-bit setup, Portable “thumbdrive” editions, or the <b>winget</b> tool.</li></ol>
+<pre>winget install --id Git.Git -e --source winget</pre>
+<p>Slides use version <b>2.47.0(2)</b>, released 2024-10-22. After install, search “Git Bash” in Windows and open it: a black terminal (MINGW64) appears with a <code>$</code> prompt.</p></details>
+
+<details><summary>3. Configuring your identity</summary>
+<pre>git config --global user.name "shereen"
+git config --global user.email "shereenyehia@gmail.com"
+git config user.name        # prints: shereen</pre>
+<p><code>--global</code> = applies to <b>all</b> repos for this user. Name + email are stamped on every commit (<i>Author:</i> in <code>git log</code>). Running <code>git config user.name</code> without a value <b>reads</b> the setting.</p></details>
+
+<details><summary>4. Types of repositories</summary>
+<div class="tw"><table><tr><th></th><th>Local</th><th>Remote</th></tr>
+<tr><td>Where</td><td>Your personal device</td><td>Server: GitHub, GitLab, Bitbucket</td></tr>
+<tr><td>Internet?</td><td>Not required</td><td>Required</td></tr>
+<tr><td>Commands</td><td><code>add</code>, <code>commit</code></td><td><code>push</code>, <code>pull</code></td></tr>
+<tr><td>Purpose</td><td>Work &amp; track changes</td><td>Collaboration</td></tr></table></div>
+<p>Remote repos are either <b>Public</b> (anyone can <i>view</i>; only people with access can <i>edit</i>; ideal for open source) or <b>Private</b> (only permitted users; for commercial/closed-source).</p></details>
+
+<details><summary>5. Local workflow step by step</summary>
+<pre>git init "myproject"     # Initialized empty Git repository in C:/Users/DELL/myproject/.git/
+cd myproject
+ls            # shows nothing
+ls -a         # ./  ../  .git/   ← hidden folder
+git status    # On branch master · No commits yet · nothing to commit
+touch index.html
+git status    # Untracked files: index.html (red)
+git add index.html
+git status    # Changes to be committed: new file: index.html (green)
+git commit -m "create index.html"   # [master (root-commit) 8106280]
+git status    # nothing to commit, working tree clean
+git log       # commit hash, Author, Date, message</pre>
+<p><b>Three areas:</b> Working directory → (<code>add</code>) → Staging area → (<code>commit</code>) → Repository. Untracked = red; staged = green. Undo staging: <code>git rm --cached &lt;file&gt;</code> (new file) or <code>git restore --staged &lt;file&gt;</code>. Discard edits: <code>git restore &lt;file&gt;</code>.</p>
+<p>The <b>.git</b> folder is hidden (enable <i>Hidden items</i> in File Explorer’s View tab); it holds the entire history. The file you created (<code>index.html</code>) is 0 KB at first. Open it in VS Code, add <code>&lt;h1&gt; hello my file ! &lt;/h1&gt;</code>.</p></details>
+
+<details><summary>6. Modifying a file and committing again</summary>
+<p>After editing: <code>git status</code> → <b>Changes not staged for commit</b>, <mark>modified: index.html</mark> (red). Run <code>git add index.html</code> → <b>Changes to be committed</b> (green). Then <code>git commit -m "adding header"</code> (13 insertions).</p>
+<p>The <mark>commit hash / ID</mark> is the long 40-character code after “commit” in <code>git log</code> (e.g. <code>b2cca50d…</code>). Short form = first 7 characters (<code>b2cca50</code>). Each commit has a unique ID.</p></details>
+
+<details><summary>7. Detached HEAD state</summary>
+<pre>git checkout b2cca50d2aeb8cdbaa0d404a2478550cf7654077</pre>
+<ul><li>You view the project <b>as it was at that commit</b>.</li><li>HEAD points to a <b>commit</b>, not a branch like master.</li><li>Changes aren’t saved to a branch unless you <mark>create a new branch or switch back</mark>.</li><li>Useful for <b>testing/exploring</b> without affecting active branches.</li></ul>
+<p><code>git branch</code> shows <code>* (HEAD detached at b2cca50)</code>. Create a branch to keep work: <code>git switch -c &lt;name&gt;</code>. Undo: <code>git switch -</code>. Return: <code>git checkout master</code>.</p></details>
+
+<details><summary>8. Branches &amp; merging</summary>
+<pre>git branch mybranch        # creates it, but you STAY on master
+git checkout mybranch      # now switched
+# edit title: Document → myDocument
+git add index.html
+git commit -m "changing in title"   # [mybranch d0ff64e]
+git checkout master
+git log                    # "changing in title" is NOT here
+git merge mybranch         # Updating b2cca50..d0ff64e  Fast-forward</pre>
+<p>Right after creating it, <code>mybranch</code> and master point to the same commit (<code>HEAD -&gt; mybranch, master</code>). The new commit lives only on mybranch until merged. <b>Fast-forward</b> = master hasn’t moved, so Git just slides master up to mybranch’s commit (no merge commit). After merge both show on the same commit <code>d0ff64e</code>. The slide title says “Merge updates mybranch with master” – in practice you stand on <b>master</b> and merge <b>mybranch into it</b>.</p></details>
+
+<details><summary>9. GitHub: remote repository &amp; push/pull</summary>
+<ol><li>Sign in → <b>+ → New repository</b>. Set owner, name (“myproject”), description, <b>Public/Private</b>, optional README, .gitignore, license. Default branch is <b>main</b>. Click <i>Create repository</i>.</li>
+<li><b>Code</b> button → copy the HTTPS clone URL.</li></ol>
+<pre>git remote -v                                   # empty at first
+git remote add origin https://github.com/shereenYehia22/myproject.git
+git remote -v                                   # origin … (fetch) / (push)
+git push -u origin master                       # browser asks to authorize Git Credential Manager
+git pull origin master                          # Already up to date.</pre>
+<p><b>push</b> = upload local commits to the remote. <b>pull</b> = fetch + merge remote updates into local branch. <b>origin</b> = default name of the remote. <b>-u (upstream)</b> links local branch to remote branch so later you only type <code>git push</code> / <code>git pull</code> (without it: <code>git push origin master</code>).</p>
+<div class="box trap"><b>Slide observation:</b> GitHub’s default branch is <b>main</b> (README “Initial commit”) but the local branch was <b>master</b>, so pushing created a <i>second</i> branch “master” (“2 Branches”, 3 commits ahead of / 1 behind main). Compare &amp; pull request is offered.</div>
+<p><b>Commits page:</b> shows commits 1 = create index.html (8106280), 2 = adding header (b2cca50), 3 = changing in title (d0ff64e). Opening one shows the <b>diff</b>: red “−” removed line, green “+” added line.</p></details>
+
+<details><summary>10. Collaborators &amp; Take Care</summary>
+<p><b>Add collaborators:</b> repo → <b>1. Settings → 2. Collaborators → 3. Add people</b>. Without collaborators only you can contribute.</p>
+<div class="box"><b>Take Care:</b> <mark>every student in the project team must use Git and GitHub</mark>, and it has a <mark>high mark on the project score</mark>. Resources: two YouTube tutorials listed on the slides.</div></details>
+</section>
+
+<section id="summary">
+<h2>Smart Summary</h2>
+<ul>
+<li><b>Git</b> = local version control · <b>GitHub</b> = online hosting/collaboration.</li>
+<li><b>Repo</b> = project files + full history. <b>Local</b> (device, offline) vs <b>Remote</b> (server). <b>Public</b> (view all) vs <b>Private</b> (permission).</li>
+<li><b>Setup:</b> install 64-bit → Git Bash → <code>git config --global user.name / user.email</code>.</li>
+<li><b>Flow:</b> <code>init → add → commit → log</code>; check with <code>status</code>.</li>
+<li><b>Areas:</b> Working dir → Staging → Repository. Red = untracked/modified; green = staged.</li>
+<li><b>.git</b> = hidden folder holding history; seen with <code>ls -a</code>.</li>
+<li><b>Commit hash</b> = unique ID; <code>checkout &lt;hash&gt;</code> → <b>detached HEAD</b> (explore only).</li>
+<li><b>Branch:</b> <code>git branch x</code> creates; <code>checkout x</code> switches; commits stay on x until <code>merge</code> (fast-forward if master unchanged).</li>
+<li><b>GitHub link:</b> <code>remote add origin URL</code> → <code>push -u origin master</code> → <code>pull</code>.</li>
+<li><b>Collaborators:</b> Settings → Collaborators → Add people. Team use of Git/GitHub = high project marks.</li></ul>
+<div class="box mem"><b>Mnemonics:</b> <b>“I-A-C-L”</b> = <u>I</u>nit, <u>A</u>dd, <u>C</u>ommit, <u>L</u>og. <b>“Add → Commit → Push”</b> = Stage, Save, Share. <b>Hash</b> = fingerprint. <b>Detached HEAD</b> = visiting the past as a tourist: you can look, but souvenirs (commits) get lost unless you make a branch.</div>
+<h3>Common mistakes &amp; traps</h3>
+<div class="box trap"><ul>
+<li>Forgetting <code>git add</code> after editing → commit includes nothing.</li>
+<li><code>git branch x</code> does <b>not</b> switch; you need <code>checkout</code>.</li>
+<li>Commits on a branch don’t appear in master’s log until merged.</li>
+<li>Public ≠ anyone can edit (only view).</li>
+<li>Local <b>master</b> vs GitHub <b>main</b> → extra branch on push.</li>
+<li>Git ≠ GitHub. <code>git init</code> alone doesn’t track files; they start untracked.</li>
+<li><code>-u</code> is about <b>upstream tracking</b>, not “update”.</li></ul></div>
+<h3>Similar concepts</h3>
+<div class="tw"><table><tr><th>Concept A</th><th>Concept B</th></tr>
+<tr><td><code>add</code>: working dir → staging</td><td><code>commit</code>: staging → repository</td></tr>
+<tr><td><code>push</code>: local → remote</td><td><code>pull</code>: remote → local (fetch+merge)</td></tr>
+<tr><td><code>git branch x</code>: create</td><td><code>git checkout x</code>: switch</td></tr>
+<tr><td>Public repo: all can view</td><td>Private repo: permitted users only</td></tr>
+<tr><td>Untracked: new, unknown to Git</td><td>Modified: tracked file changed</td></tr></table></div>
+<p class="tag">Spaced repetition: review today → +1 day → +3 days → +7 days; quiz yourself on the command table first.</p>
+</section>
+
+<section id="mcq">
+<h2>MCQs <span class="tag">click an answer</span></h2>
+<div class="score"><span id="sc">Score: 0 / 0</span><button id="rs">Reset</button></div>
+<div id="qs"></div>
+</section>
+
+<section id="written">
+<h2>Written Questions</h2>
+<h3>Short answer</h3><div id="ws"></div>
+<h3>Long form</h3><div id="wl"></div>
+</section>
+
+<section id="rev">
+<h2>Revision Sheet · Night Before Exam</h2>
+<div class="tw"><table>
+<tr><th>Command</th><th>Does</th></tr>
+<tr><td><code>git config --global user.name "x"</code></td><td>Set author name (email likewise)</td></tr>
+<tr><td><code>git init "name"</code></td><td>Create empty repo (makes hidden .git)</td></tr>
+<tr><td><code>ls -a</code></td><td>List incl. hidden files</td></tr>
+<tr><td><code>git status</code></td><td>Show state of files/branch</td></tr>
+<tr><td><code>touch f</code></td><td>Create empty file</td></tr>
+<tr><td><code>git add f</code></td><td>Stage file</td></tr>
+<tr><td><code>git commit -m "msg"</code></td><td>Save staged snapshot</td></tr>
+<tr><td><code>git log</code></td><td>History: hash, author, date, msg</td></tr>
+<tr><td><code>git checkout &lt;hash&gt;</code></td><td>Detached HEAD at that commit</td></tr>
+<tr><td><code>git checkout master</code></td><td>Return to branch</td></tr>
+<tr><td><code>git branch x</code> / <code>git branch</code></td><td>Create / list branches</td></tr>
+<tr><td><code>git checkout x</code> · <code>git switch -c x</code></td><td>Switch · create+switch</td></tr>
+<tr><td><code>git merge x</code></td><td>Merge x into current branch</td></tr>
+<tr><td><code>git remote -v</code></td><td>Show remotes</td></tr>
+<tr><td><code>git remote add origin URL</code></td><td>Link GitHub repo</td></tr>
+<tr><td><code>git push -u origin master</code></td><td>Upload + set upstream</td></tr>
+<tr><td><code>git pull origin master</code></td><td>Fetch + merge remote changes</td></tr>
+<tr><td><code>git restore f</code> · <code>git restore --staged f</code></td><td>Discard edits · unstage</td></tr></table></div>
+<div class="box mem"><b>Pipeline:</b> Working dir —add→ Staging —commit→ Local repo —push→ GitHub (—pull→ back).</div>
+<div class="box"><b>Definitions:</b> Repo = project storage + history. Commit hash = unique commit ID. Detached HEAD = on a commit, not a branch. Fast-forward = branch pointer simply moves ahead. Origin = default remote name. Upstream = remote branch tied to local branch.</div>
+<div class="box trap"><b>Last-minute reminders:</b> add before commit · branch ≠ switch · merge from target branch · main vs master · public = view only · team must use Git/GitHub (high marks).</div>
+</section>
+</main>
+<script>
+const $=s=>document.querySelector(s);
+const secs=[["explain","Explain"],["summary","Summary"],["mcq","MCQs"],["written","Written"],["rev","Revision"]];
+const nav=$("#nav");
+secs.forEach(([id,t],i)=>{const b=document.createElement("button");b.textContent=t;if(!i)b.className="on";b.onclick=()=>{document.querySelectorAll("section").forEach(s=>s.classList.toggle("on",s.id===id));nav.querySelectorAll("button").forEach(x=>x.classList.toggle("on",x===b));scrollTo({top:0,behavior:"smooth"})};nav.appendChild(b)});
+$("#th").onclick=()=>{const r=document.documentElement,d=r.dataset.theme==="dark"||(!r.dataset.theme&&matchMedia("(prefers-color-scheme:dark)").matches);r.dataset.theme=d?"light":"dark"};
+const M=[
+[`A repository is…`,[`A storage location holding all project files and their change history`,`A cloud-only website`,`A single commit`,`A text editor`],0,`Slide definition: storage location with code and changes over time.`],
+[`Which statement about Git vs GitHub is correct?`,[`They are the same`,`Git is local version control; GitHub hosts repos online`,`GitHub works offline only`,`Git requires GitHub`],1,`Git tracks changes; GitHub hosts the repo online for collaboration.`],
+[`Which command sets your username for all repositories?`,[`git config user.name "x"`,`git config --global user.name "x"`,`git name "x"`,`git set --user x`],1,`--global applies to every repo of the user.`],
+[`What does <code>git init "myproject"</code> do?`,[`Clones from GitHub`,`Initializes an empty repo in a new folder myproject (with .git)`,`Commits files`,`Deletes the folder`],1,`Output: Initialized empty Git repository in …/myproject/.git/`],
+[`<code>ls</code> shows nothing but <code>ls -a</code> shows <code>.git/</code>. Why?`,[`Repo is broken`,`.git is a hidden folder`,`.git is empty`,`ls is faulty`],1,`Names starting with a dot are hidden; -a shows all.`],
+[`After <code>touch index.html</code>, <code>git status</code> shows index.html as…`,[`Committed`,`Staged`,`Untracked`,`Modified`],2,`A new file Git doesn’t know yet is untracked (red).`],
+[`What does <code>git add index.html</code> do?`,[`Commits it`,`Moves it to the staging area`,`Pushes it`,`Deletes it`],1,`Status then says “Changes to be committed: new file”.`],
+[`The very first commit is labelled…`,[`(first-commit)`,`(root-commit)`,`(head-commit)`,`(base)`],1,`[master (root-commit) 8106280].`],
+[`After a successful commit, <code>git status</code> says…`,[`Untracked files`,`nothing to commit, working tree clean`,`No commits yet`,`Detached HEAD`],1,`Everything staged was saved.`],
+[`You edit a committed file. Status shows…`,[`Changes not staged for commit – modified`,`Untracked`,`Clean`,`Changes to be committed`],0,`Modified (red) until you git add it.`],
+[`Trap: you edit a file and run <code>git commit -m "x"</code> without <code>git add</code>. Result?`,[`Edit is committed`,`Nothing is committed for that change`,`Auto-staged`,`Pushed`],1,`Only staged changes are committed.`],
+[`The commit hash is…`,[`A password`,`A unique ID of a commit`,`A branch name`,`The author’s email`],1,`40-character ID; first 7 characters are the short form.`],
+[`<code>git checkout b2cca50d…</code> puts you in…`,[`A new remote`,`Detached HEAD state`,`Merge state`,`Staging area`],1,`HEAD points to a commit, not a branch.`],
+[`In detached HEAD, commits are lost unless you…`,[`Run git log`,`Create a new branch (or switch to one)`,`Run git init`,`Delete .git`],1,`e.g. git switch -c name.`],
+[`How do you return from detached HEAD to master?`,[`git checkout master`,`git init`,`git push`,`git add .`],0,`Output: Switched to branch 'master'.`],
+[`Does <code>git branch mybranch</code> switch you to it?`,[`Yes`,`No, you need checkout/switch`,`Only on Windows`,`Only if clean`],1,`It only creates the branch.`],
+[`You commit on mybranch then checkout master. Is “changing in title” in master’s log?`,[`Yes`,`No, not until merged`,`Only in GitHub`,`Only as a hash`],1,`The slide’s note: it can’t be found in master log.`],
+[`Why was the merge of mybranch into master a “Fast-forward”?`,[`Conflicts existed`,`Master had no new commits, so its pointer just moved ahead`,`It was a remote merge`,`Files were deleted`],1,`b2cca50..d0ff64e: simple pointer move.`],
+[`Public repository means…`,[`Anyone can view; edit needs access`,`Anyone can edit`,`Nobody can view`,`Only collaborators view`],0,`Ideal for open-source.`],
+[`Which pair is used between local and remote repos?`,[`add / commit`,`push / pull`,`init / log`,`branch / merge`],1,`push uploads; pull downloads/merges.`],
+[`What does <code>-u</code> do in <code>git push -u origin master</code>?`,[`Undo`,`Sets upstream tracking so later push/pull need no arguments`,`Updates GitHub UI`,`Uploads all`],1,`Afterwards just git push / git pull.`],
+[`<code>git remote add origin URL</code> does…`,[`Pushes code`,`Links the local repo to the remote and names it origin`,`Clones`,`Creates a branch`],1,`Check with git remote -v (fetch/push).`],
+[`<code>git pull origin master</code> =`,[`Upload only`,`Fetch + merge remote master into local master`,`Delete remote`,`Create repo`],1,`Output “Already up to date.” if nothing new.`],
+[`Why did GitHub show 2 branches (main and master) after the push?`,[`Bug`,`GitHub default is main, local was master, so master was added as a new branch`,`Collaborator added one`,`Private repo`],1,`The slide highlights master in the branch list.`],
+[`Path to add collaborators on GitHub?`,[`Code → Clone`,`Settings → Collaborators → Add people`,`Insights → Add`,`Actions → Invite`],1,`Steps 1-2-3 on slide.`],
+[`Which command installs Git via winget?`,[`winget install --id Git.Git -e --source winget`,`git install winget`,`winget get git`,`install git.exe`],0,`From git-scm.com download page.`]
+];
+let right=0,done=0;
+const qs=$("#qs");
+M.forEach((m,i)=>{const d=document.createElement("div");d.className="q";const lv=i<8?"Easy":i<19?"Medium":"Hard";
+d.innerHTML=`<b>${i+1}.</b> ${m[0]} <span class="tag">(${lv})</span>`;
+m[1].forEach((o,j)=>{const b=document.createElement("button");b.className="o";b.innerHTML=o;b.onclick=()=>{if(d.dataset.d)return;d.dataset.d=1;done++;if(j===m[2])right++;b.classList.add(j===m[2]?"ok":"no");d.querySelectorAll(".o")[m[2]].classList.add("ok");e.classList.add("s");e.innerHTML=(j===m[2]?"✅ Correct. ":"❌ Incorrect. ")+m[3];$("#sc").textContent=`Score: ${right} / ${done}`};d.appendChild(b)});
+const e=document.createElement("div");e.className="ex";d.appendChild(e);qs.appendChild(d)});
+$("#rs").onclick=()=>{right=done=0;$("#sc").textContent="Score: 0 / 0";document.querySelectorAll(".q").forEach(q=>{delete q.dataset.d;q.querySelectorAll(".o").forEach(o=>o.classList.remove("ok","no"));q.querySelector(".ex").classList.remove("s")})};
+const S=[
+[`Define repository and explain how Git and GitHub relate to it.`,`A repository is a storage location where all project files are kept, including code and changes made over time. Git is the tool that tracks every modification and lets developers revert to earlier versions. GitHub hosts the repository online so developers can collaborate from different locations.`],
+[`Differentiate local and remote repositories.`,`A local repository is on your own device, works without internet, and is managed with add and commit. A remote repository is on a server (GitHub, GitLab, Bitbucket), enables collaboration, and is synchronised with push and pull.`],
+[`What is a detached HEAD and when is it useful?`,`It means HEAD points to a specific commit (e.g. b2cca50) instead of a branch such as master, reached with git checkout &lt;hash&gt;. Changes are not saved to any branch unless you create or switch to one. It is useful for testing or exploring old versions without affecting active branches.`],
+[`Explain <code>git push -u origin master</code>.`,`It pushes the local master branch to the remote called origin and sets it as the upstream branch, linking local and remote branches. Afterwards you can simply use git push and git pull instead of naming origin master.`],
+[`Differentiate Public and Private repositories.`,`Public: anyone can view the code, but only users with access can edit; ideal for open-source. Private: only permitted users can access; suited to commercial or closed-source projects.`]];
+const L=[
+[`Describe the complete workflow from creating a local repo to pushing it to GitHub.`,`1) Install Git and open Git Bash; configure identity with git config --global user.name and user.email.<br>2) git init "myproject", cd myproject; ls -a shows the hidden .git folder; git status says no commits yet.<br>3) Create a file (touch index.html): status shows it as untracked.<br>4) git add index.html moves it to staging (green “new file”).<br>5) git commit -m "create index.html" saves a snapshot (root-commit); git log shows hash, author, date, message.<br>6) Create a GitHub repository (name, public/private, README optional).<br>7) git remote add origin &lt;URL&gt; and verify with git remote -v.<br>8) git push -u origin master, authorise Git Credential Manager in the browser.<br>9) Check GitHub: commits and files appear; use git pull to fetch teammates’ updates; add collaborators via Settings → Collaborators → Add people.`],
+[`Explain branching and merging using the myproject example. Why is a branch’s commit missing from master’s log?`,`git branch mybranch creates a pointer at the current commit (b2cca50) but you stay on master; git checkout mybranch switches. Editing the title from Document to myDocument, then git add and git commit -m "changing in title" creates commit d0ff64e that belongs only to mybranch. Checking out master and running git log shows only the first two commits because master’s pointer never moved. Standing on master and running git merge mybranch gives “Fast-forward”: master simply advances to d0ff64e (1 insertion, 1 deletion), and both names then point to the same commit. Branches therefore isolate work until it is merged.`],
+[`Describe the three areas/states of a file in Git and the commands that move files between them.`,`Working directory: files you edit; new files are untracked and edited ones “modified” (red in status). Staging area: files prepared by git add, shown green under “Changes to be committed”; unstage with git restore --staged or git rm --cached. Repository: permanent history created by git commit; afterwards status says “working tree clean” and git log lists the commit. Flow: edit → add → commit → (push to remote). Forgetting add means the change is not committed.`]];
+const mk=(a,t)=>{const d=document.createElement("details");d.innerHTML=`<summary>${a[0]}</summary><p><b>Model answer:</b><br>${a[1]}</p>`;t.appendChild(d)};
+S.forEach(a=>mk(a,$("#ws")));L.forEach(a=>mk(a,$("#wl")));
+</script>
+</body>
+</html>
